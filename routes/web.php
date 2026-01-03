@@ -20,6 +20,21 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Cart Routes
+    Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart', [\App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
+    Route::patch('/cart/{id}', [\App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/{id}', [\App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
+    
+    // Checkout Routes (Placeholder for next step)
+    Route::get('/checkout', [\App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
+    
+    // Order Routes
+    Route::get('/dashboard', [\App\Http\Controllers\OrderController::class, 'index'])->name('dashboard');
+    Route::get('/orders', [\App\Http\Controllers\OrderController::class, 'index'])->name('order.index');
+    Route::get('/orders/{id}', [\App\Http\Controllers\OrderController::class, 'show'])->name('order.show');
 });
 
 require __DIR__.'/auth.php';

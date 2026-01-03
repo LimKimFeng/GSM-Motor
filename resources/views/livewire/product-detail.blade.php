@@ -1,5 +1,27 @@
-<div class="py-12 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="py-12 bg-gray-50 relative">
+    @guest
+        <div class="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+            <div class="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-md mx-4 border-t-4 border-orange-500">
+                <div class="mb-4 text-orange-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">Login Diperlukan</h3>
+                <p class="text-gray-600 mb-6">Untuk melihat detail produk dan melakukan pemesanan, silakan masuk ke akun Anda terlebih dahulu.</p>
+                <div class="flex flex-col gap-3">
+                    <a href="{{ route('login') }}" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105 shadow-md">
+                        Masuk Sekarang
+                    </a>
+                    <a href="{{ route('register') }}" class="w-full bg-white border-2 border-orange-500 text-orange-600 hover:bg-orange-50 font-bold py-3 px-6 rounded-lg transition">
+                        Daftar Akun Baru
+                    </a>
+                </div>
+            </div>
+        </div>
+    @endguest
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 {{ Auth::check() ? '' : 'filter blur-sm pointer-events-none select-none overflow-hidden h-screen' }}">
         <!-- Breadcrumb -->
         <nav class="flex mb-6" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
@@ -138,17 +160,34 @@
                          <p class="mt-2 text-sm text-gray-500">Kategori: <span class="font-medium text-gray-700">{{ $product->category->name }}</span></p>
                     </div>
 
-                    <!-- Actions -->
-                    <div class="mt-auto flex flex-col sm:flex-row gap-3">
-                         <a href="{{ $this->whatsappAskLink }}" target="_blank" class="flex-1 flex justify-center items-center px-6 py-3 border border-primary text-primary font-bold rounded-lg hover:bg-orange-50 transition">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                            Tanya Admin
-                        </a>
-                        
-                        <a href="{{ $this->whatsappLink }}" target="_blank" class="flex-1 flex justify-center items-center px-6 py-3 bg-primary text-white font-bold rounded-lg hover:bg-orange-600 transition shadow-lg shadow-orange-200">
-                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                            Beli Sekarang
-                        </a>
+                    <!-- Quantity & Cart Config -->
+                    <div x-data="{ quantity: 1 }">
+                        <div class="flex items-center mb-6">
+                            <span class="mr-4 text-gray-700 font-medium">Jumlah:</span>
+                            <div class="flex items-center border border-gray-300 rounded-lg">
+                                <button @click="quantity > 1 ? quantity-- : null" class="px-3 py-1 bg-gray-50 hover:bg-gray-100 border-r border-gray-300 text-gray-600 font-bold">-</button>
+                                <input type="number" name="quantity_display" x-model="quantity" class="w-12 text-center border-none focus:ring-0 p-1 text-gray-700 font-semibold" readonly>
+                                <button @click="quantity++" class="px-3 py-1 bg-gray-50 hover:bg-gray-100 border-l border-gray-300 text-gray-600 font-bold">+</button>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="mt-auto flex flex-col sm:flex-row gap-3">
+                             <a href="{{ $this->whatsappAskLink }}" target="_blank" class="flex-1 flex justify-center items-center px-6 py-3 border border-primary text-primary font-bold rounded-lg hover:bg-orange-50 transition">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                                Tanya Admin
+                            </a>
+                            
+                            <form action="{{ route('cart.add') }}" method="POST" class="flex-1">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                <input type="hidden" name="quantity" :value="quantity">
+                                <button type="submit" class="w-full flex justify-center items-center px-6 py-3 bg-primary text-white font-bold rounded-lg hover:bg-orange-600 transition shadow-lg shadow-orange-200">
+                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                    Tambah Keranjang
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -197,4 +236,5 @@
         @endif
 
     </div>
+</div>
 </div>

@@ -24,11 +24,25 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // Smart Redirect: Check if user exists
+        $user = \App\Models\User::where('email', $request->email)->first();
+
+        if (! $user) {
+             return redirect()->route('register')
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => 'Email belum terdaftar. Silakan buat akun baru.']);
+        }
+
         $request->authenticate();
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('admin.dashboard', absolute: false));
+        // Redirect based on role
+        if ($user->role === 'admin') { // Assuming 'role' column exists or isAdmin() method
+             return redirect()->intended(route('admin.dashboard', absolute: false));
+        }
+
+        return redirect()->intended(route('order.index', absolute: false));
     }
 
     /**

@@ -22,6 +22,15 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'google_id',
+        'phone',
+        'province',
+        'city',
+        'district',
+        'postal_code',
+        'address_detail',
+        'otp_code',
+        'otp_expires_at',
     ];
 
     public function isAdmin()
@@ -32,6 +41,16 @@ class User extends Authenticatable
     public function isSubAdmin()
     {
         return $this->role === 'subadmin';
+    }
+
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 
     /**
