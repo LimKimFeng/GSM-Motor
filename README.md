@@ -1,74 +1,77 @@
-# GSM Motor E-Commerce Platform
+# GSM Motor E-commerce
 
-GSM Motor is a specialized e-commerce platform for motorcycle spare parts and accessories. Built with a focus on speed, mobile responsiveness, and ease of management for 1300+ product SKUs.
+Platform e-commerce sparepart motor menggunakan **Go (Gin)** untuk backend dan **React (Vite)** untuk frontend.
 
-## 🚀 Key Features
+## Struktur Proyek
 
--   **Catalog Management**: Advanced product management with multi-image support.
--   **Smart Search**: Typo-tolerant and multi-word smart matching for finding spare parts easily.
--   **Grosir (Tiered Pricing)**: Wholesale pricing tiers (e.g., special rates for buying 3 or 5 items).
--   **Dynamic Banners**: Home page slider for promotions and announcements.
--   **Smart Image Processing**: Automatic conversion to **WebP** and intelligent resizing (800x800 for products, 1920px for banners) to ensure fast loading and storage efficiency.
--   **WhatsApp Integration**: "Shopee-style" checkout flow where customers are directed to WhatsApp with pre-filled product details.
--   **Admin Dashboard**:
-    *   **RBAC**: Admin and Sub-admin roles.
-    *   **Bulk Price Update**: Quickly inflate or deflate prices by a percentage across the entire inventory.
-    *   **Stock Alerts**: Real-time widget for monitoring low-stock items.
--   **Mobile First**: Fully responsive design optimized for mobile shopping.
+```
+GSM-Motor/
+├── backend/              # Go API Server
+│   ├── cmd/main.go       # Entry point
+│   ├── internal/         # Handler, middleware, models, utils
+│   ├── uploads/          # Image storage
+│   └── .env.example      # Environment template
+├── frontend/             # React SPA
+│   ├── src/              # Components, pages, services
+│   └── .env.example      # Environment template
+├── setup.sh              # VPS setup script
+└── run.sh                # Build & deploy script
+```
 
-## 🛠️ Technology Stack
+## Requirements
 
--   **Framework**: [Laravel 11](https://laravel.com)
--   **Frontend**: [Livewire 3](https://livewire.laravel.com), [Tailwind CSS](https://tailwindcss.com), [Alpine.js](https://alpinejs.dev)
--   **Database**: MariaDB / MySQL
--   **Image Processing**: [Intervention Image](https://image.intervention.io/)
--   **Icons**: [Lucide Icons](https://lucide.dev)
+- Go 1.21+
+- Node.js 20+
+- MariaDB/MySQL
+- (Production) Nginx
 
-## 📦 Installation
+## Quick Start
 
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/your-username/gsm-motor.git
-    cd gsm-motor
-    ```
+### Development
 
-2.  **Install dependencies**:
-    ```bash
-    composer install
-    npm install
-    ```
+```bash
+# 1. Setup backend environment
+cp backend/.env.example backend/.env
+# Edit backend/.env with your config
 
-3.  **Environment Setup**:
-    ```bash
-    cp .env.example .env
-    php artisan key:generate
-    ```
-    *Configure your database settings in `.env`.*
+# 2. Setup frontend environment
+cp frontend/.env.example frontend/.env
 
-4.  **Run Migrations & Seeders**:
-    ```bash
-    php artisan migrate --seed
-    ```
+# 3. Run development servers
+./run.sh
+```
 
-5.  **Storage Link**:
-    ```bash
-    php artisan storage:link
-    ```
+### Production (VPS)
 
-6.  **Build Assets**:
-    ```bash
-    npm run dev # or npm run build
-    ```
+```bash
+# Run as root
+sudo ./setup.sh
 
-7.  **Serve Application**:
-    ```bash
-    php artisan serve
-    ```
+# Deploy
+./run.sh
+```
 
-## 📍 Store Information
+## Features
 
-**Address**: Jl. Puspa III No.37, RT.11/RW.4, Kapuk, Kecamatan Cengkareng, Kota Jakarta Barat, 11720
-**WhatsApp**: 081386363979
+- 🔐 JWT Authentication + Google OAuth
+- 📧 OTP Email Verification
+- 🛒 Shopping Cart
+- 💰 Tiered Pricing (beli 3+/5+ dapat diskon)
+- 🚚 RajaOngkir Shipping Integration
+- 📦 Order Management
+- 🖼️ Image Upload dengan WebP Conversion
+- 👨‍💼 Admin Panel
 
----
-*Developed for GSM Motor - 2026*
+## API Endpoints
+
+- `POST /api/auth/register` - Register
+- `POST /api/auth/login` - Login
+- `GET /api/products` - Product list
+- `GET /api/products/:slug` - Product detail
+- `GET /api/cart` - View cart
+- `POST /api/checkout` - Process order
+- `GET /api/admin/dashboard` - Admin dashboard
+
+## License
+
+MIT

@@ -1,23 +1,34 @@
-/vendor/
-node_modules/
-npm-debug.log
-yarn-error.log
+# Dependencies
+backend/vendor/
+frontend/node_modules/
+frontend/dist/
 
-# Laravel 4 specific
-bootstrap/compiled.php
-app/storage/
+# Build files
+backend/gsm-motor
+*.exe
 
-# Laravel 5 & Lumen specific
-public/storage
-public/hot
-
-# Laravel 5 & Lumen specific with changed public path
-public_html/storage
-public_html/hot
-
-storage/*.key
+# Environment files
 .env
-Homestead.yaml
-Homestead.json
-/.vagrant
-.phpunit.result.cache
+.env.local
+.env.production
+
+# Logs
+*.log
+logs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads (keep structure, ignore contents)
+backend/uploads/products/*
+backend/uploads/banners/*
+backend/uploads/payments/*
+backend/uploads/qrcodes/*
+!backend/uploads/**/.gitkeep
