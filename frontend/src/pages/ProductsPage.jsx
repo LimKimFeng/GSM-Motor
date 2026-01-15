@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams, useParams } from 'react-router-dom';
-import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { useSearchParams, useParams, Link } from 'react-router-dom';
+import { Search, SlidersHorizontal, X, ChevronDown, LayoutGrid } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import { productsAPI } from '../services/api';
 
@@ -62,64 +62,127 @@ export default function ProductsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen" style={{ background: 'var(--color-neutral-50)' }}>
             {/* Header */}
-            <div className="bg-white border-b sticky top-16 z-40">
-                <div className="container mx-auto px-4 py-4">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div
+                className="sticky bg-white border-b"
+                style={{
+                    top: '105px',
+                    zIndex: 40,
+                    borderColor: 'var(--color-neutral-100)'
+                }}
+            >
+                <div className="container py-5">
+                    <div className="flex flex-col md:flex items-center justify-between gap-4" style={{ flexDirection: 'row' }}>
                         {/* Title */}
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-800">
-                                {category ? category.name : search ? `Hasil pencarian: "${search}"` : 'Semua Produk'}
+                            <h1 className="text-2xl font-bold" style={{ color: 'var(--color-neutral-800)' }}>
+                                {category ? category.name : search ? `Hasil: "${search}"` : 'Semua Produk'}
                             </h1>
-                            <p className="text-gray-500 text-sm">{meta.total || 0} produk ditemukan</p>
+                            <p className="text-sm text-muted mt-1">
+                                {meta.total || 0} produk ditemukan
+                            </p>
                         </div>
 
                         {/* Controls */}
                         <div className="flex items-center gap-3">
                             {/* Search */}
-                            <div className="relative flex-1 md:w-64">
+                            <div className="relative flex-1" style={{ minWidth: '200px', maxWidth: '288px' }}>
                                 <input
                                     type="text"
                                     placeholder="Cari produk..."
                                     value={search}
                                     onChange={(e) => updateParams('search', e.target.value)}
-                                    className="w-full px-4 py-2 pl-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gsm-orange/20 focus:border-gsm-orange"
+                                    className="input-field input-with-icon"
+                                    style={{ paddingRight: '1rem' }}
                                 />
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                <Search className="input-icon" />
                             </div>
 
                             {/* Sort */}
-                            <select
-                                value={sort}
-                                onChange={(e) => updateParams('sort', e.target.value)}
-                                className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gsm-orange/20 focus:border-gsm-orange"
-                            >
-                                <option value="latest">Terbaru</option>
-                                <option value="price_asc">Harga: Rendah ke Tinggi</option>
-                                <option value="price_desc">Harga: Tinggi ke Rendah</option>
-                                <option value="name">Nama A-Z</option>
-                            </select>
+                            <div className="relative">
+                                <select
+                                    value={sort}
+                                    onChange={(e) => updateParams('sort', e.target.value)}
+                                    className="rounded-xl text-sm cursor-pointer transition"
+                                    style={{
+                                        appearance: 'none',
+                                        padding: '0.625rem 2.5rem 0.625rem 1rem',
+                                        background: 'white',
+                                        border: '1px solid var(--color-neutral-200)',
+                                        outline: 'none'
+                                    }}
+                                >
+                                    <option value="latest">Terbaru</option>
+                                    <option value="price_asc">Harga: Rendah → Tinggi</option>
+                                    <option value="price_desc">Harga: Tinggi → Rendah</option>
+                                    <option value="name">Nama A-Z</option>
+                                </select>
+                                <ChevronDown
+                                    className="pointer-events-none"
+                                    style={{
+                                        position: 'absolute',
+                                        right: '0.75rem',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        width: '16px',
+                                        height: '16px',
+                                        color: 'var(--color-neutral-400)'
+                                    }}
+                                />
+                            </div>
 
                             {/* Filter Toggle (Mobile) */}
                             <button
                                 onClick={() => setShowFilters(!showFilters)}
-                                className="md:hidden p-2 border border-gray-200 rounded-lg"
+                                className="md:hidden rounded-xl transition"
+                                style={{
+                                    padding: '0.625rem',
+                                    background: showFilters ? 'var(--color-primary)' : 'white',
+                                    border: `1px solid ${showFilters ? 'var(--color-primary)' : 'var(--color-neutral-200)'}`,
+                                    color: showFilters ? 'white' : 'var(--color-neutral-600)'
+                                }}
                             >
-                                <SlidersHorizontal className="w-5 h-5" />
+                                <SlidersHorizontal style={{ width: '20px', height: '20px' }} />
                             </button>
                         </div>
                     </div>
 
                     {/* Active Filters */}
                     {(search || categorySlug) && (
-                        <div className="flex flex-wrap gap-2 mt-3">
+                        <div className="flex flex-wrap gap-2 mt-4">
                             {search && (
-                                <span className="inline-flex items-center gap-1 px-3 py-1 bg-gsm-orange/10 text-gsm-orange rounded-full text-sm">
+                                <span
+                                    className="inline-flex items-center gap-2 rounded-lg text-sm font-medium"
+                                    style={{
+                                        padding: '0.375rem 0.75rem',
+                                        background: 'rgba(255, 107, 53, 0.1)',
+                                        color: 'var(--color-primary)'
+                                    }}
+                                >
                                     Pencarian: {search}
-                                    <button onClick={() => updateParams('search', '')} className="hover:bg-gsm-orange/20 rounded-full p-0.5">
-                                        <X className="w-3 h-3" />
+                                    <button
+                                        onClick={() => updateParams('search', '')}
+                                        className="rounded-full transition"
+                                        style={{ padding: '0.125rem' }}
+                                    >
+                                        <X style={{ width: '14px', height: '14px' }} />
                                     </button>
+                                </span>
+                            )}
+                            {categorySlug && (
+                                <span
+                                    className="inline-flex items-center gap-2 rounded-lg text-sm font-medium"
+                                    style={{
+                                        padding: '0.375rem 0.75rem',
+                                        background: 'rgba(255, 107, 53, 0.1)',
+                                        color: 'var(--color-primary)'
+                                    }}
+                                >
+                                    Kategori: {category?.name}
+                                    <Link to="/produk" className="rounded-full transition" style={{ padding: '0.125rem' }}>
+                                        <X style={{ width: '14px', height: '14px' }} />
+                                    </Link>
                                 </span>
                             )}
                         </div>
@@ -127,29 +190,45 @@ export default function ProductsPage() {
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 py-6">
-                <div className="flex gap-6">
-                    {/* Sidebar - Categories */}
-                    <aside className={`${showFilters ? 'block' : 'hidden'} md:block w-full md:w-64 shrink-0`}>
-                        <div className="bg-white rounded-xl p-4 sticky top-36">
-                            <h3 className="font-semibold text-gray-800 mb-3">Kategori</h3>
-                            <div className="space-y-1">
-                                <a
-                                    href="/produk"
-                                    className={`block px-3 py-2 rounded-lg text-sm transition-colors ${!categorySlug ? 'bg-gsm-orange/10 text-gsm-orange font-medium' : 'text-gray-600 hover:bg-gray-50'
-                                        }`}
+            <div className="container py-8">
+                <div className="flex gap-8">
+                    {/* Sidebar */}
+                    <aside className={`${showFilters ? 'block' : 'hidden'} md:block shrink-0`} style={{ width: '256px' }}>
+                        <div
+                            className="card p-5 sticky"
+                            style={{ top: '180px' }}
+                        >
+                            <h3 className="font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--color-neutral-800)' }}>
+                                <LayoutGrid style={{ width: '16px', height: '16px', color: 'var(--color-primary)' }} />
+                                Kategori
+                            </h3>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                <Link
+                                    to="/produk"
+                                    className="rounded-xl text-sm font-medium transition"
+                                    style={{
+                                        padding: '0.625rem 1rem',
+                                        background: !categorySlug ? 'var(--color-primary)' : 'transparent',
+                                        color: !categorySlug ? 'white' : 'var(--color-neutral-600)',
+                                        boxShadow: !categorySlug ? 'var(--shadow-primary)' : 'none'
+                                    }}
                                 >
                                     Semua Produk
-                                </a>
+                                </Link>
                                 {categories.map((cat) => (
-                                    <a
+                                    <Link
                                         key={cat.id}
-                                        href={`/kategori/${cat.slug}`}
-                                        className={`block px-3 py-2 rounded-lg text-sm transition-colors ${categorySlug === cat.slug ? 'bg-gsm-orange/10 text-gsm-orange font-medium' : 'text-gray-600 hover:bg-gray-50'
-                                            }`}
+                                        to={`/kategori/${cat.slug}`}
+                                        className="rounded-xl text-sm font-medium transition"
+                                        style={{
+                                            padding: '0.625rem 1rem',
+                                            background: categorySlug === cat.slug ? 'var(--color-primary)' : 'transparent',
+                                            color: categorySlug === cat.slug ? 'white' : 'var(--color-neutral-600)',
+                                            boxShadow: categorySlug === cat.slug ? 'var(--shadow-primary)' : 'none'
+                                        }}
                                     >
                                         {cat.name}
-                                    </a>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
@@ -158,27 +237,42 @@ export default function ProductsPage() {
                     {/* Products Grid */}
                     <div className="flex-1">
                         {loading ? (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <div className="products-grid">
                                 {[...Array(12)].map((_, i) => (
-                                    <div key={i} className="bg-white rounded-xl overflow-hidden">
+                                    <div key={i} className="card rounded-2xl overflow-hidden">
                                         <div className="aspect-square skeleton" />
-                                        <div className="p-4 space-y-2">
-                                            <div className="h-4 skeleton w-3/4" />
-                                            <div className="h-4 skeleton w-1/2" />
-                                            <div className="h-6 skeleton w-1/3" />
+                                        <div className="p-4" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                            <div className="skeleton rounded-full" style={{ height: '12px', width: '33%' }} />
+                                            <div className="skeleton rounded-full" style={{ height: '16px', width: '100%' }} />
+                                            <div className="skeleton rounded-full" style={{ height: '16px', width: '66%' }} />
+                                            <div className="skeleton rounded-full" style={{ height: '24px', width: '50%' }} />
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         ) : products.length === 0 ? (
-                            <div className="text-center py-20">
-                                <div className="text-6xl mb-4">🔍</div>
-                                <h3 className="text-xl font-semibold text-gray-800 mb-2">Tidak ada produk ditemukan</h3>
-                                <p className="text-gray-500">Coba kata kunci atau kategori lain</p>
+                            <div className="text-center py-24">
+                                <div
+                                    className="mx-auto mb-6 rounded-full flex items-center justify-center"
+                                    style={{
+                                        width: '96px',
+                                        height: '96px',
+                                        background: 'var(--color-neutral-100)'
+                                    }}
+                                >
+                                    <Search style={{ width: '40px', height: '40px', color: 'var(--color-neutral-300)' }} />
+                                </div>
+                                <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--color-neutral-800)' }}>
+                                    Tidak ada produk ditemukan
+                                </h3>
+                                <p className="text-muted mb-6">Coba kata kunci atau kategori lain</p>
+                                <Link to="/produk" className="btn btn-primary">
+                                    Lihat Semua Produk
+                                </Link>
                             </div>
                         ) : (
                             <>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                                <div className="products-grid">
                                     {products.map((product) => (
                                         <ProductCard key={product.id} product={product} />
                                     ))}
@@ -186,22 +280,47 @@ export default function ProductsPage() {
 
                                 {/* Pagination */}
                                 {meta.total_pages > 1 && (
-                                    <div className="flex justify-center gap-2 mt-8">
-                                        {[...Array(Math.min(meta.total_pages, 5))].map((_, i) => {
-                                            const pageNum = i + 1;
-                                            return (
-                                                <button
-                                                    key={pageNum}
-                                                    onClick={() => updateParams('page', pageNum.toString())}
-                                                    className={`w-10 h-10 rounded-lg font-medium transition-colors ${page === pageNum
-                                                            ? 'bg-gsm-orange text-white'
-                                                            : 'bg-white text-gray-600 hover:bg-gray-50 border'
-                                                        }`}
-                                                >
-                                                    {pageNum}
-                                                </button>
-                                            );
-                                        })}
+                                    <div className="flex justify-center items-center gap-2 mt-10">
+                                        <button
+                                            onClick={() => updateParams('page', Math.max(1, page - 1).toString())}
+                                            disabled={page === 1}
+                                            className="btn btn-secondary text-sm"
+                                            style={{ opacity: page === 1 ? 0.5 : 1 }}
+                                        >
+                                            Sebelumnya
+                                        </button>
+
+                                        <div className="flex gap-1">
+                                            {[...Array(Math.min(meta.total_pages, 5))].map((_, i) => {
+                                                const pageNum = i + 1;
+                                                return (
+                                                    <button
+                                                        key={pageNum}
+                                                        onClick={() => updateParams('page', pageNum.toString())}
+                                                        className="rounded-xl font-medium text-sm transition"
+                                                        style={{
+                                                            width: '40px',
+                                                            height: '40px',
+                                                            background: page === pageNum ? 'var(--color-primary)' : 'white',
+                                                            color: page === pageNum ? 'white' : 'var(--color-neutral-600)',
+                                                            border: page === pageNum ? 'none' : '1px solid var(--color-neutral-200)',
+                                                            boxShadow: page === pageNum ? 'var(--shadow-primary)' : 'none'
+                                                        }}
+                                                    >
+                                                        {pageNum}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+
+                                        <button
+                                            onClick={() => updateParams('page', Math.min(meta.total_pages, page + 1).toString())}
+                                            disabled={page === meta.total_pages}
+                                            className="btn btn-secondary text-sm"
+                                            style={{ opacity: page === meta.total_pages ? 0.5 : 1 }}
+                                        >
+                                            Selanjutnya
+                                        </button>
                                     </div>
                                 )}
                             </>

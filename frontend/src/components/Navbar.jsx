@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import {
     Search, ShoppingCart, User, Menu, X, ChevronDown,
-    Home, Package, LogOut, Settings, Truck
+    Home, Package, LogOut, Settings, Truck, Moon, Sun
 } from 'lucide-react';
 import { useAuthStore, useCartStore, useUIStore } from '../context/store';
 import { productsAPI } from '../services/api';
@@ -17,8 +17,17 @@ export default function Navbar() {
     const [searchResults, setSearchResults] = useState([]);
     const [showSearch, setShowSearch] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
     const searchRef = useRef(null);
     const userMenuRef = useRef(null);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -71,69 +80,92 @@ export default function Navbar() {
     };
 
     return (
-        <header className="sticky top-0 z-50 bg-white shadow-sm">
-            {/* Top bar */}
-            <div className="bg-gsm-orange text-white py-1.5">
-                <div className="container mx-auto px-4 flex justify-between items-center text-xs">
-                    <span>Selamat datang di GSM Motor! 🏍️</span>
+        <header className={`navbar ${isScrolled ? 'navbar-scrolled' : ''}`}>
+            {/* Top Announcement Bar */}
+            <div className="announcement-bar">
+                <div className="container flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <span>🏍️</span>
+                        <span>Selamat datang di GSM Motor</span>
+                    </div>
                     <a
-                        href={`https://wa.me/6281386363979`}
+                        href="https://wa.me/6281386363979"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:underline"
+                        className="flex items-center gap-1 hover:underline"
                     >
-                        Hubungi Kami: 0813-8636-3979
+                        <span>📞</span>
+                        0813-8636-3979
                     </a>
                 </div>
             </div>
 
-            {/* Main navbar */}
-            <nav className="container mx-auto px-4 py-3">
+            {/* Main Navbar */}
+            <nav className="container py-3">
                 <div className="flex items-center justify-between gap-4">
                     {/* Logo */}
-                    <Link to="/" className="flex items-center gap-2 shrink-0">
-                        <div className="w-10 h-10 rounded-lg gradient-orange flex items-center justify-center">
-                            <span className="text-white font-bold text-lg">GSM</span>
+                    <Link to="/" className="flex items-center gap-3 shrink-0">
+                        <div
+                            className="flex items-center justify-center rounded-xl shadow-primary"
+                            style={{
+                                width: '44px',
+                                height: '44px',
+                                background: 'linear-gradient(135deg, #FF6B35 0%, #E85A2A 100%)'
+                            }}
+                        >
+                            <span className="text-white font-bold" style={{ fontSize: '1.125rem' }}>GSM</span>
                         </div>
-                        <div className="hidden sm:block">
-                            <h1 className="font-bold text-lg text-gray-800">GSM Motor</h1>
-                            <p className="text-xs text-gray-500">Sparepart Motor Terlengkap</p>
+                        <div className="sm:block hidden">
+                            <h1 className="font-bold" style={{ fontSize: '1.125rem', color: 'var(--color-neutral-800)' }}>
+                                GSM Motor
+                            </h1>
+                            <p className="text-xs text-muted">
+                                Sparepart Motor Terlengkap
+                            </p>
                         </div>
                     </Link>
 
                     {/* Search - Desktop */}
-                    <div className="hidden md:block flex-1 max-w-xl relative" ref={searchRef}>
+                    <div className="hidden md:block flex-1" style={{ maxWidth: '32rem', position: 'relative' }} ref={searchRef}>
                         <form onSubmit={handleSearchSubmit}>
-                            <div className="relative">
+                            <div style={{ position: 'relative' }}>
                                 <input
                                     type="text"
                                     value={searchQuery}
                                     onChange={(e) => handleSearch(e.target.value)}
-                                    placeholder="Cari sparepart..."
-                                    className="w-full px-4 py-2.5 pl-11 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gsm-orange/20 focus:border-gsm-orange"
+                                    placeholder="Cari sparepart motor..."
+                                    className="input-field input-with-icon"
+                                    style={{ paddingRight: '1rem' }}
                                 />
-                                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <Search className="input-icon" />
                             </div>
                         </form>
 
                         {/* Search Results Dropdown */}
                         {showSearch && searchResults.length > 0 && (
-                            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden z-50">
+                            <div className="search-results animate-slide-down">
                                 {searchResults.map((product) => (
                                     <Link
                                         key={product.id}
                                         to={`/produk/${product.slug}`}
                                         onClick={() => setShowSearch(false)}
-                                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                                        className="search-result-item"
                                     >
-                                        <img
-                                            src={product.image_path ? `/api/uploads/${product.image_path}` : '/placeholder.webp'}
-                                            alt={product.name}
-                                            className="w-10 h-10 object-cover rounded"
-                                        />
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-medium text-sm truncate">{product.name}</p>
-                                            <p className="text-gsm-orange text-sm font-semibold">
+                                        <div
+                                            className="rounded-lg overflow-hidden bg-gray-100 shrink-0"
+                                            style={{ width: '48px', height: '48px' }}
+                                        >
+                                            <img
+                                                src={product.image_path ? `/api/uploads/${product.image_path}` : '/placeholder.webp'}
+                                                alt={product.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                        <div className="flex-1" style={{ minWidth: 0 }}>
+                                            <p className="font-medium text-sm truncate" style={{ color: 'var(--color-neutral-800)' }}>
+                                                {product.name}
+                                            </p>
+                                            <p className="text-sm font-semibold text-primary">
                                                 Rp {product.price?.toLocaleString('id-ID')}
                                             </p>
                                         </div>
@@ -148,11 +180,24 @@ export default function Navbar() {
                         {/* Cart */}
                         <Link
                             to="/keranjang"
-                            className="relative p-2.5 rounded-lg hover:bg-gray-100 transition-colors"
+                            className="btn-ghost rounded-xl"
+                            style={{ position: 'relative', padding: '0.625rem' }}
                         >
-                            <ShoppingCart className="w-5 h-5 text-gray-600" />
+                            <ShoppingCart style={{ width: '20px', height: '20px', color: 'var(--color-neutral-600)' }} />
                             {count > 0 && (
-                                <span className="absolute -top-1 -right-1 w-5 h-5 bg-gsm-orange text-white text-xs rounded-full flex items-center justify-center font-medium">
+                                <span
+                                    className="flex items-center justify-center rounded-full text-white font-semibold animate-fade-in"
+                                    style={{
+                                        position: 'absolute',
+                                        top: '-2px',
+                                        right: '-2px',
+                                        width: '20px',
+                                        height: '20px',
+                                        fontSize: '0.75rem',
+                                        background: 'var(--color-primary)',
+                                        boxShadow: 'var(--shadow-primary)'
+                                    }}
+                                >
                                     {count > 99 ? '99+' : count}
                                 </span>
                             )}
@@ -160,85 +205,83 @@ export default function Navbar() {
 
                         {/* User Menu */}
                         {isAuthenticated ? (
-                            <div className="relative" ref={userMenuRef}>
+                            <div className="dropdown" ref={userMenuRef}>
                                 <button
                                     onClick={() => setShowUserMenu(!showUserMenu)}
-                                    className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                                    className="flex items-center gap-2 px-3 py-2 rounded-xl transition"
+                                    style={{ background: 'transparent' }}
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-gsm-orange/10 flex items-center justify-center">
-                                        <User className="w-4 h-4 text-gsm-orange" />
+                                    <div
+                                        className="flex items-center justify-center rounded-xl shadow-md"
+                                        style={{
+                                            width: '36px',
+                                            height: '36px',
+                                            background: 'linear-gradient(135deg, #FF6B35 0%, #E85A2A 100%)'
+                                        }}
+                                    >
+                                        <User style={{ width: '16px', height: '16px', color: 'white' }} />
                                     </div>
-                                    <span className="hidden lg:block text-sm font-medium text-gray-700 max-w-[100px] truncate">
+                                    <span className="hidden lg:block text-sm font-medium truncate" style={{ maxWidth: '100px', color: 'var(--color-neutral-700)' }}>
                                         {user?.name}
                                     </span>
-                                    <ChevronDown className="w-4 h-4 text-gray-400 hidden lg:block" />
+                                    <ChevronDown
+                                        className="hidden lg:block transition"
+                                        style={{
+                                            width: '16px',
+                                            height: '16px',
+                                            color: 'var(--color-neutral-400)',
+                                            transform: showUserMenu ? 'rotate(180deg)' : 'rotate(0deg)'
+                                        }}
+                                    />
                                 </button>
 
                                 {showUserMenu && (
-                                    <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
-                                        <div className="px-4 py-2 border-b border-gray-100">
-                                            <p className="font-medium text-sm">{user?.name}</p>
-                                            <p className="text-xs text-gray-500">{user?.email}</p>
+                                    <div className="dropdown-menu" style={{ width: '16rem' }}>
+                                        <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--color-neutral-100)' }}>
+                                            <p className="font-semibold" style={{ color: 'var(--color-neutral-800)' }}>{user?.name}</p>
+                                            <p className="text-xs truncate text-muted">{user?.email}</p>
                                         </div>
 
-                                        <div className="py-1">
-                                            <Link
-                                                to="/dashboard"
-                                                onClick={() => setShowUserMenu(false)}
-                                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
-                                            >
-                                                <Home className="w-4 h-4" />
+                                        <div className="py-2">
+                                            <Link to="/dashboard" onClick={() => setShowUserMenu(false)} className="dropdown-item">
+                                                <Home style={{ width: '16px', height: '16px', color: 'var(--color-neutral-400)' }} />
                                                 Dashboard
                                             </Link>
-                                            <Link
-                                                to="/orders"
-                                                onClick={() => setShowUserMenu(false)}
-                                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
-                                            >
-                                                <Package className="w-4 h-4" />
+                                            <Link to="/orders" onClick={() => setShowUserMenu(false)} className="dropdown-item">
+                                                <Package style={{ width: '16px', height: '16px', color: 'var(--color-neutral-400)' }} />
                                                 Pesanan Saya
                                             </Link>
-                                            <Link
-                                                to="/profil"
-                                                onClick={() => setShowUserMenu(false)}
-                                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
-                                            >
-                                                <Settings className="w-4 h-4" />
+                                            <Link to="/profil" onClick={() => setShowUserMenu(false)} className="dropdown-item">
+                                                <Settings style={{ width: '16px', height: '16px', color: 'var(--color-neutral-400)' }} />
                                                 Pengaturan Profil
                                             </Link>
 
                                             {(user?.role === 'admin' || user?.role === 'subadmin') && (
                                                 <>
-                                                    <hr className="my-1" />
-                                                    <Link
-                                                        to="/admin"
-                                                        onClick={() => setShowUserMenu(false)}
-                                                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gsm-orange hover:bg-orange-50"
-                                                    >
-                                                        <Truck className="w-4 h-4" />
+                                                    <div style={{ height: '1px', margin: '0.5rem 1rem', background: 'var(--color-neutral-100)' }} />
+                                                    <Link to="/admin" onClick={() => setShowUserMenu(false)} className="dropdown-item text-primary">
+                                                        <Truck style={{ width: '16px', height: '16px' }} />
                                                         Panel Admin
                                                     </Link>
                                                 </>
                                             )}
                                         </div>
 
-                                        <hr className="my-1" />
-                                        <button
-                                            onClick={handleLogout}
-                                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 w-full"
-                                        >
-                                            <LogOut className="w-4 h-4" />
-                                            Keluar
-                                        </button>
+                                        <div className="border-t py-2" style={{ borderColor: 'var(--color-neutral-100)' }}>
+                                            <button onClick={handleLogout} className="dropdown-item w-full" style={{ color: 'var(--color-error)' }}>
+                                                <LogOut style={{ width: '16px', height: '16px' }} />
+                                                Keluar
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                             </div>
                         ) : (
                             <div className="flex items-center gap-2">
-                                <Link to="/login" className="btn-secondary text-sm py-2 px-4">
+                                <Link to="/login" className="nav-link hidden sm:block">
                                     Masuk
                                 </Link>
-                                <Link to="/register" className="btn-primary text-sm py-2 px-4 hidden sm:block">
+                                <Link to="/register" className="btn btn-primary hidden sm:flex" style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}>
                                     Daftar
                                 </Link>
                             </div>
@@ -247,12 +290,13 @@ export default function Navbar() {
                         {/* Mobile Menu Toggle */}
                         <button
                             onClick={toggleMobileMenu}
-                            className="p-2.5 rounded-lg hover:bg-gray-100 md:hidden"
+                            className="btn-ghost md:hidden rounded-xl"
+                            style={{ padding: '0.625rem' }}
                         >
                             {isMobileMenuOpen ? (
-                                <X className="w-5 h-5 text-gray-600" />
+                                <X style={{ width: '20px', height: '20px', color: 'var(--color-neutral-600)' }} />
                             ) : (
-                                <Menu className="w-5 h-5 text-gray-600" />
+                                <Menu style={{ width: '20px', height: '20px', color: 'var(--color-neutral-600)' }} />
                             )}
                         </button>
                     </div>
@@ -261,15 +305,15 @@ export default function Navbar() {
                 {/* Mobile Search */}
                 <div className="mt-3 md:hidden">
                     <form onSubmit={handleSearchSubmit}>
-                        <div className="relative">
+                        <div style={{ position: 'relative' }}>
                             <input
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => handleSearch(e.target.value)}
-                                placeholder="Cari sparepart..."
-                                className="w-full px-4 py-2.5 pl-11 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gsm-orange/20 focus:border-gsm-orange"
+                                placeholder="Cari sparepart motor..."
+                                className="input-field input-with-icon"
                             />
-                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <Search className="input-icon" />
                         </div>
                     </form>
                 </div>
@@ -277,37 +321,42 @@ export default function Navbar() {
 
             {/* Mobile Menu */}
             {isMobileMenuOpen && (
-                <div className="md:hidden bg-white border-t border-gray-100">
-                    <div className="container mx-auto px-4 py-4 space-y-2">
-                        <Link
-                            to="/"
-                            onClick={closeMobileMenu}
-                            className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-50"
-                        >
-                            <Home className="w-5 h-5 text-gray-500" />
-                            Beranda
+                <div className="md:hidden border-t animate-slide-down" style={{ background: 'white', borderColor: 'var(--color-neutral-100)' }}>
+                    <div className="container py-4" style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                        <Link to="/" onClick={closeMobileMenu} className="dropdown-item rounded-xl">
+                            <Home style={{ width: '20px', height: '20px', color: 'var(--color-neutral-500)' }} />
+                            <span className="font-medium">Beranda</span>
                         </Link>
-                        <Link
-                            to="/produk"
-                            onClick={closeMobileMenu}
-                            className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-50"
-                        >
-                            <Package className="w-5 h-5 text-gray-500" />
-                            Semua Produk
+                        <Link to="/produk" onClick={closeMobileMenu} className="dropdown-item rounded-xl">
+                            <Package style={{ width: '20px', height: '20px', color: 'var(--color-neutral-500)' }} />
+                            <span className="font-medium">Semua Produk</span>
                         </Link>
-                        <Link
-                            to="/keranjang"
-                            onClick={closeMobileMenu}
-                            className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-50"
-                        >
-                            <ShoppingCart className="w-5 h-5 text-gray-500" />
-                            Keranjang
+                        <Link to="/keranjang" onClick={closeMobileMenu} className="dropdown-item rounded-xl">
+                            <ShoppingCart style={{ width: '20px', height: '20px', color: 'var(--color-neutral-500)' }} />
+                            <span className="font-medium">Keranjang</span>
                             {count > 0 && (
-                                <span className="ml-auto bg-gsm-orange text-white text-xs px-2 py-0.5 rounded-full">
+                                <span
+                                    className="ml-auto rounded-full text-white text-xs font-semibold"
+                                    style={{
+                                        background: 'var(--color-primary)',
+                                        padding: '0.125rem 0.625rem'
+                                    }}
+                                >
                                     {count}
                                 </span>
                             )}
                         </Link>
+                        {!isAuthenticated && (
+                            <>
+                                <div style={{ height: '1px', margin: '0.5rem 0', background: 'var(--color-neutral-100)' }} />
+                                <Link to="/login" onClick={closeMobileMenu} className="btn btn-secondary w-full">
+                                    Masuk
+                                </Link>
+                                <Link to="/register" onClick={closeMobileMenu} className="btn btn-primary w-full">
+                                    Daftar
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
             )}

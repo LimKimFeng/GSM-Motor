@@ -1,7 +1,7 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard, Package, ShoppingCart, Folder, Image, DollarSign,
-    ChevronLeft, Menu, X, LogOut, Home
+    ChevronLeft, Menu, X, LogOut, Home, Bell, Settings
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuthStore } from '../../context/store';
@@ -32,61 +32,125 @@ export default function AdminLayout() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen" style={{ background: 'var(--color-neutral-100)' }}>
             {/* Mobile Header */}
-            <header className="lg:hidden bg-white shadow-sm px-4 py-3 flex items-center justify-between">
-                <button onClick={() => setSidebarOpen(true)} className="p-2">
-                    <Menu className="w-6 h-6" />
+            <header
+                className="lg:hidden flex items-center justify-between"
+                style={{
+                    background: 'white',
+                    padding: '0.75rem 1rem',
+                    boxShadow: 'var(--shadow-sm)',
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 40
+                }}
+            >
+                <button
+                    onClick={() => setSidebarOpen(true)}
+                    style={{ padding: '0.5rem', background: 'none', border: 'none' }}
+                >
+                    <Menu style={{ width: '24px', height: '24px', color: 'var(--color-neutral-600)' }} />
                 </button>
                 <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg gradient-orange flex items-center justify-center">
+                    <div
+                        className="flex items-center justify-center rounded-lg"
+                        style={{
+                            width: '32px',
+                            height: '32px',
+                            background: 'linear-gradient(135deg, #FF6B35 0%, #E85A2A 100%)'
+                        }}
+                    >
                         <span className="text-white font-bold text-sm">GSM</span>
                     </div>
-                    <span className="font-bold">Admin</span>
+                    <span className="font-bold" style={{ color: 'var(--color-neutral-800)' }}>Admin</span>
                 </div>
-                <Link to="/" className="p-2">
-                    <Home className="w-5 h-5 text-gray-500" />
+                <Link to="/" style={{ padding: '0.5rem' }}>
+                    <Home style={{ width: '20px', height: '20px', color: 'var(--color-neutral-500)' }} />
                 </Link>
             </header>
 
             {/* Sidebar Overlay */}
             {sidebarOpen && (
                 <div
-                    className="lg:hidden fixed inset-0 bg-black/50 z-40"
+                    className="lg:hidden fixed inset-0"
+                    style={{ background: 'rgba(0, 0, 0, 0.5)', zIndex: 45 }}
                     onClick={() => setSidebarOpen(false)}
                 />
             )}
 
             {/* Sidebar */}
-            <aside className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 transform transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                <div className="p-4 border-b flex items-center justify-between">
+            <aside
+                className="fixed"
+                style={{
+                    top: 0,
+                    left: 0,
+                    height: '100%',
+                    width: '16rem',
+                    background: 'var(--color-dark-bg)',
+                    boxShadow: 'var(--shadow-xl)',
+                    zIndex: 50,
+                    transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+                    transition: 'transform 0.3s ease'
+                }}
+            >
+                {/* Logo */}
+                <div
+                    className="flex items-center justify-between"
+                    style={{ padding: '1.25rem', borderBottom: '1px solid var(--color-dark-border)' }}
+                >
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg gradient-orange flex items-center justify-center">
+                        <div
+                            className="flex items-center justify-center rounded-xl"
+                            style={{
+                                width: '44px',
+                                height: '44px',
+                                background: 'linear-gradient(135deg, #FF6B35 0%, #E85A2A 100%)',
+                                boxShadow: 'var(--shadow-primary)'
+                            }}
+                        >
                             <span className="text-white font-bold">GSM</span>
                         </div>
                         <div>
-                            <h1 className="font-bold text-gray-800">GSM Motor</h1>
-                            <p className="text-xs text-gray-500">Admin Panel</p>
+                            <h1 className="font-bold text-white" style={{ fontSize: '1rem' }}>GSM Motor</h1>
+                            <p className="text-xs" style={{ color: 'var(--color-neutral-500)' }}>Admin Panel</p>
                         </div>
                     </div>
-                    <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-1">
-                        <X className="w-5 h-5" />
+                    <button
+                        onClick={() => setSidebarOpen(false)}
+                        className="lg:hidden"
+                        style={{ padding: '0.25rem', background: 'none', border: 'none' }}
+                    >
+                        <X style={{ width: '20px', height: '20px', color: 'var(--color-neutral-400)' }} />
                     </button>
                 </div>
 
-                <nav className="p-4">
-                    <ul className="space-y-1">
+                {/* Menu */}
+                <nav style={{ padding: '1rem' }}>
+                    <p
+                        className="text-xs font-semibold uppercase tracking-wide"
+                        style={{ color: 'var(--color-neutral-500)', marginBottom: '0.75rem', paddingLeft: '0.75rem' }}
+                    >
+                        Menu
+                    </p>
+                    <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                         {menuItems.map((item) => (
                             <li key={item.path}>
                                 <Link
                                     to={item.path}
                                     onClick={() => setSidebarOpen(false)}
-                                    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${isActive(item.path, item.exact)
-                                            ? 'bg-gsm-orange text-white'
-                                            : 'text-gray-600 hover:bg-gray-100'
-                                        }`}
+                                    className="flex items-center gap-3 rounded-xl transition"
+                                    style={{
+                                        padding: '0.75rem 1rem',
+                                        background: isActive(item.path, item.exact)
+                                            ? 'linear-gradient(135deg, #FF6B35 0%, #E85A2A 100%)'
+                                            : 'transparent',
+                                        color: isActive(item.path, item.exact) ? 'white' : 'var(--color-neutral-400)',
+                                        boxShadow: isActive(item.path, item.exact) ? 'var(--shadow-primary)' : 'none',
+                                        fontWeight: isActive(item.path, item.exact) ? '600' : '500',
+                                        fontSize: '0.9375rem'
+                                    }}
                                 >
-                                    <item.icon className="w-5 h-5" />
+                                    <item.icon style={{ width: '20px', height: '20px' }} />
                                     {item.label}
                                 </Link>
                             </li>
@@ -94,41 +158,88 @@ export default function AdminLayout() {
                     </ul>
                 </nav>
 
-                <div className="absolute bottom-0 left-0 right-0 p-4 border-t">
+                {/* User Section */}
+                <div
+                    style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        padding: '1rem',
+                        borderTop: '1px solid var(--color-dark-border)'
+                    }}
+                >
                     <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                            <span className="font-medium text-gray-600">{user?.name?.charAt(0)}</span>
+                        <div
+                            className="flex items-center justify-center rounded-full shrink-0"
+                            style={{
+                                width: '40px',
+                                height: '40px',
+                                background: 'var(--color-dark-elevated)'
+                            }}
+                        >
+                            <span className="font-semibold" style={{ color: 'var(--color-primary)' }}>
+                                {user?.name?.charAt(0)}
+                            </span>
                         </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm truncate">{user?.name}</p>
-                            <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                        <div className="flex-1" style={{ minWidth: 0 }}>
+                            <p className="font-medium text-sm text-white truncate">{user?.name}</p>
+                            <p className="text-xs truncate" style={{ color: 'var(--color-neutral-500)' }}>{user?.email}</p>
                         </div>
                     </div>
 
                     <div className="flex gap-2">
                         <Link
                             to="/"
-                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                            className="flex-1 flex items-center justify-center gap-2 rounded-xl transition"
+                            style={{
+                                padding: '0.625rem',
+                                fontSize: '0.875rem',
+                                fontWeight: '500',
+                                background: 'var(--color-dark-elevated)',
+                                color: 'var(--color-neutral-300)',
+                                border: '1px solid var(--color-dark-border)'
+                            }}
                         >
-                            <ChevronLeft className="w-4 h-4" />
+                            <ChevronLeft style={{ width: '16px', height: '16px' }} />
                             Toko
                         </Link>
                         <button
                             onClick={handleLogout}
-                            className="flex items-center justify-center px-3 py-2 text-sm text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+                            className="flex items-center justify-center rounded-xl transition"
+                            style={{
+                                padding: '0.625rem 1rem',
+                                fontSize: '0.875rem',
+                                background: 'rgba(239, 68, 68, 0.1)',
+                                color: '#EF4444',
+                                border: 'none'
+                            }}
                         >
-                            <LogOut className="w-4 h-4" />
+                            <LogOut style={{ width: '16px', height: '16px' }} />
                         </button>
                     </div>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <main className="lg:ml-64 min-h-screen">
-                <div className="p-4 lg:p-6">
+            <main style={{ marginLeft: 0, minHeight: '100vh' }}>
+                <div style={{ padding: '1.5rem' }}>
                     <Outlet />
                 </div>
             </main>
+
+            {/* Responsive Styles */}
+            <style>{`
+                @media (min-width: 1024px) {
+                    .lg\\:hidden { display: none !important; }
+                    aside { 
+                        transform: translateX(0) !important;
+                    }
+                    main {
+                        margin-left: 16rem !important;
+                    }
+                }
+            `}</style>
         </div>
     );
 }
