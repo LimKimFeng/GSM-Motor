@@ -126,6 +126,9 @@ export const adminAPI = {
     // Dashboard
     dashboard: () => api.get('/admin/dashboard'),
 
+    // Subadmin Stats
+    subadminStats: () => api.get('/admin/subadmin-stats'),
+
     // Products
     products: {
         list: (params) => api.get('/admin/products', { params }),

@@ -151,7 +151,7 @@ export default function Footer() {
                                     <Mail style={{ width: '16px', height: '16px', color: 'var(--color-primary)' }} />
                                 </div>
                                 <div>
-                                    <p className="text-sm text-white font-medium">info@gsmmotor.com</p>
+                                    <p className="text-sm text-white font-medium">landpeace.07@gmail.com</p>
                                     <p className="text-xs text-muted">Email Support</p>
                                 </div>
                             </li>
@@ -167,7 +167,7 @@ export default function Footer() {
                                     <Clock style={{ width: '16px', height: '16px', color: 'var(--color-primary)' }} />
                                 </div>
                                 <div>
-                                    <p className="text-sm text-white font-medium">Senin - Sabtu</p>
+                                    <p className="text-sm text-white font-medium">Senin - Minggu</p>
                                     <p className="text-xs text-muted">08:00 - 17:00 WIB</p>
                                 </div>
                             </li>
@@ -180,7 +180,7 @@ export default function Footer() {
                             Pengiriman
                         </h4>
                         <div className="flex flex-wrap gap-2 mb-6">
-                            {['JNE', 'J&T', 'Grab', 'Gojek', 'COD'].map((courier) => (
+                            {['JNE', 'J&T', 'Grab', 'Gojek'].map((courier) => (
                                 <span
                                     key={courier}
                                     className="text-xs font-medium rounded-lg"
@@ -200,7 +200,7 @@ export default function Footer() {
                             Pembayaran
                         </h4>
                         <div className="flex flex-wrap gap-2 mb-6">
-                            {['Transfer Bank', 'QRIS', 'E-Wallet'].map((method) => (
+                            {['Transfer Bank'].map((method) => (
                                 <span
                                     key={method}
                                     className="text-xs font-medium rounded-lg"

@@ -19,14 +19,15 @@ type Product struct {
 	Stock           int            `gorm:"default:0" json:"stock"`
 	Weight          int            `gorm:"default:500" json:"weight"` // in grams
 	ImagePath       *string        `gorm:"size:255" json:"image_path,omitempty"`
+	SubmittedBy     *string        `gorm:"size:255" json:"submitted_by,omitempty"` // Case-sensitive subadmin name
 	LastPriceUpdate *time.Time     `json:"last_price_update,omitempty"`
 	CreatedAt       time.Time      `json:"created_at"`
 	UpdatedAt       time.Time      `json:"updated_at"`
 	DeletedAt       gorm.DeletedAt `gorm:"index" json:"-"`
 
 	// Relations
-	Category *Category       `gorm:"foreignKey:CategoryID" json:"category,omitempty"`
-	Images   []ProductImage  `gorm:"foreignKey:ProductID" json:"images,omitempty"`
+	Category *Category      `gorm:"foreignKey:CategoryID" json:"category,omitempty"`
+	Images   []ProductImage `gorm:"foreignKey:ProductID" json:"images,omitempty"`
 }
 
 // GetImageURL returns full URL for the primary image

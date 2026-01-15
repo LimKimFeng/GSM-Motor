@@ -1,13 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, Shield, Zap, Gift } from 'lucide-react';
 import { authAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 
+const backgroundImages = [
+    '/images/motorcyle_pict1.webp',
+    '/images/motorcyle_pict2.webp',
+    '/images/motorcyle_pict3.webp',
+    '/images/motorcyle_pict4.webp',
+    '/images/motorcyle_pict5.webp',
+    '/images/motorcyle_pict6.webp',
+    '/images/motorcyle_pict7.webp',
+];
+
 export default function RegisterPage() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [form, setForm] = useState({
         name: '',
         email: '',
@@ -16,6 +27,14 @@ export default function RegisterPage() {
         confirm_password: '',
         website: '',
     });
+
+    // Auto-change background image
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentImageIndex((prev) => (prev + 1) % backgroundImages.length);
+        }, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
     const getPasswordStrength = (password) => {
         if (!password) return { score: 0, label: '', color: '' };
@@ -64,20 +83,48 @@ export default function RegisterPage() {
 
     return (
         <div className="auth-page">
-            {/* Left Side - Visual */}
+            {/* Left Side - Visual with Image Slider */}
             <div
                 className="auth-visual"
                 style={{
-                    background: 'linear-gradient(135deg, #1F2937 0%, #111827 100%)',
-                    display: 'none'
+                    position: 'relative',
+                    display: 'none',
+                    overflow: 'hidden'
                 }}
             >
-                {/* Gradient Overlay */}
+                {/* Background Images */}
+                {backgroundImages.map((img, index) => (
+                    <div
+                        key={img}
+                        style={{
+                            position: 'absolute',
+                            inset: 0,
+                            backgroundImage: `url(${img})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            opacity: index === currentImageIndex ? 1 : 0,
+                            transition: 'opacity 1s ease-in-out'
+                        }}
+                    />
+                ))}
+
+                {/* Overlay */}
                 <div
                     style={{
                         position: 'absolute',
                         inset: 0,
-                        background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.2) 0%, transparent 50%)'
+                        background: 'linear-gradient(135deg, rgba(31, 41, 55, 0.9) 0%, rgba(17, 24, 39, 0.85) 100%)',
+                        zIndex: 1
+                    }}
+                />
+
+                {/* Orange Gradient Accent */}
+                <div
+                    style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.3) 0%, transparent 50%)',
+                        zIndex: 2
                     }}
                 />
 
@@ -89,14 +136,14 @@ export default function RegisterPage() {
                     <div style={{ maxWidth: '28rem' }}>
                         <div className="flex items-center gap-3 mb-8">
                             <div
-                                className="flex items-center justify-center rounded-2xl shadow-primary"
+                                className="flex items-center justify-center rounded-2xl shadow-primary overflow-hidden"
                                 style={{
                                     width: '56px',
                                     height: '56px',
-                                    background: 'linear-gradient(135deg, #FF6B35 0%, #E85A2A 100%)'
+                                    background: 'white'
                                 }}
                             >
-                                <span className="text-white font-bold text-xl">GSM</span>
+                                <img src="/logo.webp" alt="GSM Motor" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                             </div>
                             <div>
                                 <h1 className="text-white font-bold text-2xl">GSM Motor</h1>
@@ -137,6 +184,22 @@ export default function RegisterPage() {
                                 </div>
                             ))}
                         </div>
+
+                        {/* Image Indicators */}
+                        <div className="flex gap-2 mt-8">
+                            {backgroundImages.map((_, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setCurrentImageIndex(idx)}
+                                    className="rounded-full transition-all"
+                                    style={{
+                                        width: idx === currentImageIndex ? '24px' : '8px',
+                                        height: '8px',
+                                        background: idx === currentImageIndex ? 'var(--color-primary)' : 'rgba(255, 255, 255, 0.3)'
+                                    }}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -147,14 +210,14 @@ export default function RegisterPage() {
                     {/* Mobile Logo */}
                     <Link to="/" className="lg:hidden flex items-center justify-center gap-3 mb-8">
                         <div
-                            className="flex items-center justify-center rounded-xl shadow-primary"
+                            className="flex items-center justify-center rounded-xl shadow-primary overflow-hidden"
                             style={{
                                 width: '48px',
                                 height: '48px',
-                                background: 'linear-gradient(135deg, #FF6B35 0%, #E85A2A 100%)'
+                                background: 'white'
                             }}
                         >
-                            <span className="text-white font-bold" style={{ fontSize: '1.125rem' }}>GSM</span>
+                            <img src="/logo.webp" alt="GSM Motor" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                         </div>
                         <div>
                             <h1 className="font-bold text-xl" style={{ color: 'var(--color-neutral-800)' }}>GSM Motor</h1>

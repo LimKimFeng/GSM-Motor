@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Search, Edit, Trash2, X } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, X, UserCheck } from 'lucide-react';
 import { adminAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 
@@ -16,7 +16,7 @@ export default function Products() {
 
     const [form, setForm] = useState({
         name: '', category_id: '', price: '', price_3_items: '', price_5_items: '',
-        stock: '', weight: '500', description: ''
+        stock: '', weight: '500', description: '', submitted_by: ''
     });
     const [images, setImages] = useState([]);
 
@@ -48,11 +48,12 @@ export default function Products() {
                 name: product.name, category_id: product.category_id,
                 price: product.price, price_3_items: product.price_3_items || '',
                 price_5_items: product.price_5_items || '', stock: product.stock,
-                weight: product.weight, description: product.description || ''
+                weight: product.weight, description: product.description || '',
+                submitted_by: product.submitted_by || ''
             });
         } else {
             setEditing(null);
-            setForm({ name: '', category_id: '', price: '', price_3_items: '', price_5_items: '', stock: '', weight: '500', description: '' });
+            setForm({ name: '', category_id: '', price: '', price_3_items: '', price_5_items: '', stock: '', weight: '500', description: '', submitted_by: '' });
         }
         setImages([]);
         setShowModal(true);
@@ -129,14 +130,15 @@ export default function Products() {
                                 <th className="px-4 py-3 text-sm font-medium text-gray-600">Kategori</th>
                                 <th className="px-4 py-3 text-sm font-medium text-gray-600">Harga</th>
                                 <th className="px-4 py-3 text-sm font-medium text-gray-600">Stok</th>
+                                <th className="px-4 py-3 text-sm font-medium text-gray-600">Diupload oleh</th>
                                 <th className="px-4 py-3 text-sm font-medium text-gray-600">Aksi</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y">
                             {loading ? (
-                                <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-500">Memuat...</td></tr>
+                                <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-500">Memuat...</td></tr>
                             ) : products.length === 0 ? (
-                                <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-500">Tidak ada produk</td></tr>
+                                <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-500">Tidak ada produk</td></tr>
                             ) : (
                                 products.map((p) => (
                                     <tr key={p.id} className="hover:bg-gray-50">
@@ -151,6 +153,16 @@ export default function Products() {
                                         <td className="px-4 py-3 font-medium">Rp {formatPrice(p.price)}</td>
                                         <td className="px-4 py-3">
                                             <span className={`badge ${p.stock < 10 ? 'badge-warning' : 'badge-success'}`}>{p.stock}</span>
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            {p.submitted_by ? (
+                                                <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm">
+                                                    <UserCheck className="w-3 h-3" />
+                                                    {p.submitted_by}
+                                                </span>
+                                            ) : (
+                                                <span className="text-gray-400 text-sm">-</span>
+                                            )}
                                         </td>
                                         <td className="px-4 py-3">
                                             <div className="flex gap-1">
@@ -221,6 +233,25 @@ export default function Products() {
                                     <input type="number" value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} className="input-field" required />
                                 </div>
                             </div>
+
+                            {/* Submit By Input */}
+                            <div>
+                                <label className="block text-sm font-medium mb-1 text-blue-600">
+                                    <UserCheck className="w-4 h-4 inline mr-1" />
+                                    Submit by (Nama Pengupload)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={form.submitted_by}
+                                    onChange={(e) => setForm({ ...form, submitted_by: e.target.value })}
+                                    className="input-field"
+                                    placeholder="Masukkan nama Anda (case-sensitive)"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">
+                                    * Nama ini akan dicatat untuk tracking kinerja. Penulisan huruf besar/kecil dibedakan.
+                                </p>
+                            </div>
+
                             <div>
                                 <label className="block text-sm font-medium mb-1">Gambar</label>
                                 <input type="file" multiple accept="image/*" onChange={(e) => setImages([...e.target.files])} className="input-field" />

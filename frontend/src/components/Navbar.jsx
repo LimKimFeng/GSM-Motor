@@ -106,14 +106,14 @@ export default function Navbar() {
                     {/* Logo */}
                     <Link to="/" className="flex items-center gap-3 shrink-0">
                         <div
-                            className="flex items-center justify-center rounded-xl shadow-primary"
+                            className="flex items-center justify-center rounded-xl shadow-primary overflow-hidden"
                             style={{
                                 width: '44px',
                                 height: '44px',
-                                background: 'linear-gradient(135deg, #FF6B35 0%, #E85A2A 100%)'
+                                background: 'white'
                             }}
                         >
-                            <span className="text-white font-bold" style={{ fontSize: '1.125rem' }}>GSM</span>
+                            <img src="/logo.webp" alt="GSM Motor" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                         </div>
                         <div className="sm:block hidden">
                             <h1 className="font-bold" style={{ fontSize: '1.125rem', color: 'var(--color-neutral-800)' }}>

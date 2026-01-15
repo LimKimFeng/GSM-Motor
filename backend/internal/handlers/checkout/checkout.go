@@ -210,8 +210,38 @@ func ProcessCheckout(c *gin.Context) {
 	// Generate QR code for order (async)
 	go utils.GenerateQRCode(orderNumber, config.AppConfig.UploadPath)
 
-	// Send order notification email (async)
+	// Send order notification email to customer (async)
 	go utils.SendOrderNotificationEmail(user.Email, orderNumber, user.Name, order.GetGrandTotal())
+
+	// Send order notification email to admins (async)
+	var orderItems []utils.OrderItemInfo
+	for _, item := range cartItems {
+		if item.Product != nil {
+			orderItems = append(orderItems, utils.OrderItemInfo{
+				ProductName: item.Product.Name,
+				Quantity:    item.Quantity,
+				Price:       item.Product.GetEffectivePrice(item.Quantity),
+				Subtotal:    item.Product.GetEffectivePrice(item.Quantity) * float64(item.Quantity),
+			})
+		}
+	}
+
+	phone := ""
+	if user.Phone != nil {
+		phone = *user.Phone
+	}
+
+	go utils.SendOrderNotificationToAdmins(
+		orderNumber,
+		user.Name,
+		user.Email,
+		phone,
+		shippingAddress,
+		orderItems,
+		order.GetGrandTotal(),
+		shippingCost,
+		"Transfer Bank",
+	)
 
 	c.JSON(http.StatusCreated, gin.H{
 		"message":      "Pesanan berhasil dibuat",

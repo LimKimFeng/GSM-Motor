@@ -66,6 +66,7 @@ func AdminCreateProduct(c *gin.Context) {
 	stock, _ := strconv.Atoi(c.PostForm("stock"))
 	weight, _ := strconv.Atoi(c.PostForm("weight"))
 	description := c.PostForm("description")
+	submittedBy := c.PostForm("submitted_by") // New field for subadmin tracking
 
 	if name == "" || categoryID == 0 || price <= 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Nama, kategori, dan harga wajib diisi"})
@@ -87,6 +88,11 @@ func AdminCreateProduct(c *gin.Context) {
 		Stock:       stock,
 		Weight:      weight,
 		Description: &description,
+	}
+
+	// Set submitted_by if provided (case-sensitive)
+	if submittedBy != "" {
+		product.SubmittedBy = &submittedBy
 	}
 
 	if price3 > 0 {
@@ -128,6 +134,19 @@ func AdminCreateProduct(c *gin.Context) {
 				database.DB.Save(&product)
 			}
 		}
+	}
+
+	// Send email notification to admins if submitted_by is provided
+	if submittedBy != "" {
+		// Get category name
+		var category models.Category
+		categoryName := "Tidak ada kategori"
+		if err := database.DB.First(&category, categoryID).Error; err == nil {
+			categoryName = category.Name
+		}
+
+		// Send notification asynchronously
+		go utils.SendProductUploadNotification(submittedBy, name, price, categoryName)
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
@@ -174,6 +193,10 @@ func AdminUpdateProduct(c *gin.Context) {
 	}
 	if desc := c.PostForm("description"); desc != "" {
 		product.Description = &desc
+	}
+	// Update submitted_by if provided (case-sensitive)
+	if submittedBy := c.PostForm("submitted_by"); submittedBy != "" {
+		product.SubmittedBy = &submittedBy
 	}
 
 	database.DB.Save(&product)
@@ -306,5 +329,58 @@ func BulkPriceUpdate(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Harga berhasil diperbarui",
 		"count":   len(products),
+	})
+}
+
+// SubadminStats represents statistics for a subadmin
+type SubadminStats struct {
+	Name         string `json:"name"`
+	ProductCount int64  `json:"product_count"`
+}
+
+// GetSubadminStats returns statistics for all subadmins
+func GetSubadminStats(c *gin.Context) {
+	var stats []SubadminStats
+
+	// Query to get unique submitted_by names and their product counts
+	// Note: submitted_by is stored as-is (case-sensitive)
+	rows, err := database.DB.Model(&models.Product{}).
+		Select("submitted_by as name, COUNT(*) as product_count").
+		Where("submitted_by IS NOT NULL AND submitted_by != ''").
+		Group("submitted_by").
+		Order("product_count DESC").
+		Rows()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil statistik"})
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var stat SubadminStats
+		if err := rows.Scan(&stat.Name, &stat.ProductCount); err != nil {
+			continue
+		}
+		stats = append(stats, stat)
+	}
+
+	// Get total products with and without submitted_by
+	var totalWithSubmitter int64
+	var totalWithoutSubmitter int64
+
+	database.DB.Model(&models.Product{}).
+		Where("submitted_by IS NOT NULL AND submitted_by != ''").
+		Count(&totalWithSubmitter)
+
+	database.DB.Model(&models.Product{}).
+		Where("submitted_by IS NULL OR submitted_by = ''").
+		Count(&totalWithoutSubmitter)
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":                    stats,
+		"total_with_submitter":    totalWithSubmitter,
+		"total_without_submitter": totalWithoutSubmitter,
+		"unique_submitters":       len(stats),
 	})
 }

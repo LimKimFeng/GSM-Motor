@@ -1,7 +1,7 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard, Package, ShoppingCart, Folder, Image, DollarSign,
-    ChevronLeft, Menu, X, LogOut, Home, Bell, Settings
+    ChevronLeft, Menu, X, LogOut, Home, Bell, Settings, Users
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuthStore } from '../../context/store';
@@ -19,6 +19,7 @@ export default function AdminLayout() {
         { path: '/admin/categories', icon: Folder, label: 'Kategori' },
         { path: '/admin/banners', icon: Image, label: 'Banner' },
         { path: '/admin/bulk-price', icon: DollarSign, label: 'Ubah Harga' },
+        { path: '/admin/subadmin-performance', icon: Users, label: 'Kinerja Subadmin' },
     ];
 
     const isActive = (path, exact = false) => {

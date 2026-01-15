@@ -30,6 +30,7 @@ import AdminCategories from './pages/admin/Categories';
 import AdminBanners from './pages/admin/Banners';
 import AdminBulkPrice from './pages/admin/BulkPrice';
 import AdminOrderDetail from './pages/admin/OrderDetail';
+import SubadminPerformance from './pages/admin/SubadminPerformance';
 
 // Layout for main public/customer pages
 function MainLayout() {
@@ -175,6 +176,7 @@ function App() {
           <Route path="categories" element={<AdminCategories />} />
           <Route path="banners" element={<AdminBanners />} />
           <Route path="bulk-price" element={<AdminBulkPrice />} />
+          <Route path="subadmin-performance" element={<SubadminPerformance />} />
         </Route>
 
         {/* 404 */}

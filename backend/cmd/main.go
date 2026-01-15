@@ -139,6 +139,7 @@ func main() {
 		{
 			// Dashboard
 			adminGroup.GET("/dashboard", admin.AdminDashboard)
+			adminGroup.GET("/subadmin-stats", admin.GetSubadminStats)
 
 			// Products
 			adminGroup.GET("/products", admin.AdminListProducts)
