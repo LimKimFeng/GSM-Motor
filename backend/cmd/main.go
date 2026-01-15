@@ -62,36 +62,19 @@ func main() {
 	// Middleware
 	r.Use(middleware.CORSMiddleware())
 
-	// Serve static files
-	r.Static("/uploads", config.AppConfig.UploadPath)
-
-	// Serve frontend static files (React build)
-	r.Static("/assets", "../frontend/dist/assets")
-	r.StaticFile("/vite.svg", "../frontend/dist/vite.svg")
-
-	// Root route - API info
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"name":    "GSM Motor E-commerce API",
-			"version": "1.0.0",
-			"status":  "running",
-			"endpoints": gin.H{
-				"health":   "/health",
-				"api":      "/api/*",
-				"uploads":  "/uploads/*",
-				"frontend": "/ (SPA)",
-			},
-			"documentation": gin.H{
-				"products": "/api/products",
-				"auth":     "/api/auth/*",
-				"cart":     "/api/cart",
-				"checkout": "/api/checkout",
-				"orders":   "/api/orders",
-				"admin":    "/api/admin/*",
-				"shipping": "/api/shipping/*",
-			},
-		})
+	// Security headers
+	r.Use(func(c *gin.Context) {
+		c.Header("X-Content-Type-Options", "nosniff")
+		c.Header("X-Frame-Options", "DENY")
+		c.Header("X-XSS-Protection", "1; mode=block")
+		c.Header("Referrer-Policy", "strict-origin-when-cross-origin")
+		// Hide server information
+		c.Header("Server", "")
+		c.Next()
 	})
+
+	// Serve static files (uploads only)
+	r.Static("/uploads", config.AppConfig.UploadPath)
 
 	// API routes
 	api := r.Group("/api")
@@ -185,20 +168,27 @@ func main() {
 		}
 	}
 
-	// Health check
+	// Health check (minimal info for security)
 	r.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{"status": "ok"})
+		c.JSON(200, gin.H{"status": "healthy"})
 	})
 
-	// SPA fallback - serve index.html for all unmatched routes (React Router)
+	// API info endpoint (protected, only accessible via /api/info)
+	protected := r.Group("/api")
+	protected.Use(middleware.AuthMiddleware(), middleware.AdminMiddleware())
+	{
+		protected.GET("/info", func(c *gin.Context) {
+			c.JSON(200, gin.H{
+				"name":    "GSM Motor API",
+				"version": "1.0.0",
+				"env":     config.AppConfig.AppEnv,
+			})
+		})
+	}
+
+	// NoRoute handler - return 404 for unknown routes (don't expose system info)
 	r.NoRoute(func(c *gin.Context) {
-		// Check if it's an API request
-		if len(c.Request.URL.Path) >= 4 && c.Request.URL.Path[:4] == "/api" {
-			c.JSON(404, gin.H{"error": "Endpoint not found"})
-			return
-		}
-		// Serve frontend index.html for SPA routing
-		c.File("../frontend/dist/index.html")
+		c.JSON(404, gin.H{"error": "Not found"})
 	})
 
 	// Start server
