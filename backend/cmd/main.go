@@ -65,6 +65,34 @@ func main() {
 	// Serve static files
 	r.Static("/uploads", config.AppConfig.UploadPath)
 
+	// Serve frontend static files (React build)
+	r.Static("/assets", "../frontend/dist/assets")
+	r.StaticFile("/vite.svg", "../frontend/dist/vite.svg")
+
+	// Root route - API info
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"name":    "GSM Motor E-commerce API",
+			"version": "1.0.0",
+			"status":  "running",
+			"endpoints": gin.H{
+				"health":   "/health",
+				"api":      "/api/*",
+				"uploads":  "/uploads/*",
+				"frontend": "/ (SPA)",
+			},
+			"documentation": gin.H{
+				"products": "/api/products",
+				"auth":     "/api/auth/*",
+				"cart":     "/api/cart",
+				"checkout": "/api/checkout",
+				"orders":   "/api/orders",
+				"admin":    "/api/admin/*",
+				"shipping": "/api/shipping/*",
+			},
+		})
+	})
+
 	// API routes
 	api := r.Group("/api")
 	{
@@ -160,6 +188,17 @@ func main() {
 	// Health check
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})
+	})
+
+	// SPA fallback - serve index.html for all unmatched routes (React Router)
+	r.NoRoute(func(c *gin.Context) {
+		// Check if it's an API request
+		if len(c.Request.URL.Path) >= 4 && c.Request.URL.Path[:4] == "/api" {
+			c.JSON(404, gin.H{"error": "Endpoint not found"})
+			return
+		}
+		// Serve frontend index.html for SPA routing
+		c.File("../frontend/dist/index.html")
 	})
 
 	// Start server
