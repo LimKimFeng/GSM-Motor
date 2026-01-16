@@ -101,41 +101,49 @@ echo ""
 if [ "$IS_PRODUCTION" = true ]; then
     echo -e "${YELLOW}[3/5] 📦 Deploying files...${NC}"
     
+    # Ensure directories exist
+    echo "  → Ensuring directories exist..."
+    sudo mkdir -p /opt/gsm-motor/backend
+    sudo mkdir -p /opt/gsm-motor/frontend/dist
+    sudo mkdir -p /opt/gsm-motor/backend/uploads
+    
     # Create backup of current deployment
     if [ -f "/opt/gsm-motor/backend/gsm-motor" ]; then
         echo "  → Creating backup..."
-        cp /opt/gsm-motor/backend/gsm-motor /opt/gsm-motor/backend/gsm-motor.backup.$(date +%Y%m%d_%H%M%S)
+        sudo cp /opt/gsm-motor/backend/gsm-motor /opt/gsm-motor/backend/gsm-motor.backup.$(date +%Y%m%d_%H%M%S)
     fi
     
     # Copy backend binary
-    if [ -d "/opt/gsm-motor" ]; then
-        echo "  → Copying backend binary..."
-        sudo cp "$APP_DIR/backend/gsm-motor" /opt/gsm-motor/backend/
-        sudo chmod +x /opt/gsm-motor/backend/gsm-motor
-        
-        # Copy .env if it doesn't exist
-        if [ ! -f "/opt/gsm-motor/backend/.env" ]; then
-            echo "  → Copying .env configuration..."
+    echo "  → Copying backend binary..."
+    sudo cp "$APP_DIR/backend/gsm-motor" /opt/gsm-motor/backend/
+    sudo chmod +x /opt/gsm-motor/backend/gsm-motor
+    
+    # Copy .env if it doesn't exist
+    if [ ! -f "/opt/gsm-motor/backend/.env" ]; then
+        echo "  → Copying .env configuration..."
+        if [ -f "$APP_DIR/backend/.env" ]; then
             sudo cp "$APP_DIR/backend/.env" /opt/gsm-motor/backend/
+        else
+            echo -e "${YELLOW}  ⚠ Warning: backend/.env not found! Please create it.${NC}"
         fi
-        
-        # Copy frontend dist
-        echo "  → Copying frontend files..."
-        sudo rm -rf /opt/gsm-motor/frontend/dist/*
-        sudo cp -r "$APP_DIR/frontend/dist/"* /opt/gsm-motor/frontend/dist/
-        
-        # Copy uploads directory if doesn't exist
-        if [ ! -d "/opt/gsm-motor/backend/uploads" ]; then
-            echo "  → Creating uploads directory..."
-            sudo mkdir -p /opt/gsm-motor/backend/uploads
-        fi
-        
-        # Set proper permissions
-        echo "  → Setting permissions..."
-        sudo chown -R www-data:www-data /opt/gsm-motor
-        sudo chmod -R 755 /opt/gsm-motor
-        sudo chmod -R 775 /opt/gsm-motor/backend/uploads
     fi
+    
+    # Copy frontend dist
+    echo "  → Copying frontend files..."
+    sudo rm -rf /opt/gsm-motor/frontend/dist/*
+    sudo cp -r "$APP_DIR/frontend/dist/"* /opt/gsm-motor/frontend/dist/
+    
+    # Copy uploads directory content if exists
+    if [ -d "$APP_DIR/backend/uploads" ] && [ "$(ls -A $APP_DIR/backend/uploads 2>/dev/null)" ]; then
+        echo "  → Syncing uploads directory..."
+        sudo cp -r "$APP_DIR/backend/uploads/"* /opt/gsm-motor/backend/uploads/ 2>/dev/null || true
+    fi
+    
+    # Set proper permissions
+    echo "  → Setting permissions..."
+    sudo chown -R www-data:www-data /opt/gsm-motor
+    sudo chmod -R 755 /opt/gsm-motor
+    sudo chmod -R 775 /opt/gsm-motor/backend/uploads
     
     echo -e "${GREEN}  ✓ Files deployed successfully!${NC}"
 else
