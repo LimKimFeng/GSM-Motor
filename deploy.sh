@@ -19,7 +19,7 @@ echo ""
 # Step 1: Rebuild backend
 echo -e "${YELLOW}[1/4] Rebuilding backend...${NC}"
 cd backend
-CGO_ENABLED=0 GOOS=linux go build -o gsm-motor ./cmd/main.go
+CGO_ENABLED=1 GOOS=linux go build -o gsm-motor ./cmd/main.go
 echo -e "${GREEN}✓ Backend rebuilt${NC}"
 echo ""
 
