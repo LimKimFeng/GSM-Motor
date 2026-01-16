@@ -167,6 +167,7 @@ export const adminAPI = {
         updateStatus: (id, data) => api.patch(`/admin/orders/${id}`, data),
         verifyPayment: (orderId, proofId, data) =>
             api.post(`/admin/orders/${orderId}/verify-payment/${proofId}`, data),
+        delete: (id) => api.delete(`/admin/orders/${id}`),
         getReceipt: (id) => api.get(`/admin/orders/${id}/receipt`),
     },
 };

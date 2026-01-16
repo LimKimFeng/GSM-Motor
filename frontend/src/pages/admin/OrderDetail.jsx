@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, X, Truck, MapPin, CreditCard, Package, Printer } from 'lucide-react';
+import { ArrowLeft, Check, X, Truck, MapPin, CreditCard, Package, Printer, Trash2 } from 'lucide-react';
 import { adminAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 
@@ -56,6 +56,24 @@ export default function OrderDetail() {
         }
     };
 
+    const handleDelete = async () => {
+        if (!confirm('Hapus pesanan ini? Tindakan ini tidak dapat dibatalkan!')) return;
+
+        try {
+            await adminAPI.orders.delete(id);
+            toast.success('Pesanan berhasil dihapus');
+            navigate('/admin/orders');
+        } catch (error) {
+            toast.error(error.response?.data?.error || 'Gagal menghapus pesanan');
+        }
+    };
+
+    const handlePrintReceipt = () => {
+        // Open receipt in new window
+        const receiptUrl = `/admin/orders/${id}/receipt`;
+        window.open(receiptUrl, '_blank', 'width=400,height=600');
+    };
+
     const getImageUrl = (path) => `${import.meta.env.VITE_API_URL?.replace('/api', '')}/uploads/${path}`;
 
     if (loading) {
@@ -76,8 +94,8 @@ export default function OrderDetail() {
                     <p className="text-gray-500">{formatDate(order.created_at)}</p>
                 </div>
                 <span className={`badge text-lg px-4 py-2 ${order.status === 'pending' ? 'badge-warning' :
-                        order.status === 'processing' ? 'badge-info' :
-                            order.status === 'completed' ? 'badge-success' : 'bg-gray-100'
+                    order.status === 'processing' ? 'badge-info' :
+                        order.status === 'completed' ? 'badge-success' : 'bg-gray-100'
                     }`}>{order.status}</span>
             </div>
 
@@ -163,6 +181,19 @@ export default function OrderDetail() {
                     <div className="bg-white rounded-xl p-6">
                         <h2 className="font-semibold text-gray-800 mb-3">Aksi</h2>
                         <div className="space-y-2">
+                            {/* Print Receipt Button */}
+                            {order.payment_status === 'verified' && (
+                                <button
+                                    onClick={handlePrintReceipt}
+                                    className="btn btn-secondary w-full flex items-center justify-center gap-2"
+                                    style={{ background: '#10b981', color: 'white', borderColor: '#10b981' }}
+                                >
+                                    <Printer className="w-4 h-4" />
+                                    Cetak Resi
+                                </button>
+                            )}
+
+                            {/* Status Update Buttons */}
                             {order.status === 'pending' && order.payment_status === 'verified' && (
                                 <button onClick={() => updateStatus('processing')} disabled={updating} className="btn-primary w-full">Proses Pesanan</button>
                             )}
@@ -175,6 +206,16 @@ export default function OrderDetail() {
                             {order.status === 'pending' && (
                                 <button onClick={() => updateStatus('cancelled')} disabled={updating} className="btn-secondary w-full text-red-500">Batalkan</button>
                             )}
+
+                            {/* Delete Button */}
+                            <hr className="my-3" />
+                            <button
+                                onClick={handleDelete}
+                                className="btn btn-secondary w-full flex items-center justify-center gap-2 text-red-600 hover:bg-red-50 border-red-300"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                Hapus Pesanan
+                            </button>
                         </div>
                     </div>
                 </div>

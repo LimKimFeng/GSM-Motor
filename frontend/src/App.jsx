@@ -30,6 +30,7 @@ import AdminCategories from './pages/admin/Categories';
 import AdminBanners from './pages/admin/Banners';
 import AdminBulkPrice from './pages/admin/BulkPrice';
 import AdminOrderDetail from './pages/admin/OrderDetail';
+import AdminOrderReceipt from './pages/admin/OrderReceipt';
 import SubadminPerformance from './pages/admin/SubadminPerformance';
 
 // Layout for main public/customer pages
@@ -201,6 +202,9 @@ function App() {
           } />
           <Route path="orders/:id" element={
             <SuperAdminRoute><AdminOrderDetail /></SuperAdminRoute>
+          } />
+          <Route path="orders/:id/receipt" element={
+            <SuperAdminRoute><AdminOrderReceipt /></SuperAdminRoute>
           } />
           <Route path="categories" element={<AdminCategories />} />
           <Route path="banners" element={<AdminBanners />} />
