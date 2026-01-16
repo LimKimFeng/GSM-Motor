@@ -128,6 +128,60 @@ func AdminUpdateOrderStatus(c *gin.Context) {
 	})
 }
 
+// AdminDeleteOrder deletes an order and its related data
+func AdminDeleteOrder(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID tidak valid"})
+		return
+	}
+
+	// Check if order exists
+	var order models.Order
+	if err := database.DB.First(&order, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Pesanan tidak ditemukan"})
+		return
+	}
+
+	// Begin transaction
+	tx := database.DB.Begin()
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal memulai transaksi"})
+		return
+	}
+
+	// Delete order items first (foreign key constraint)
+	if err := tx.Where("order_id = ?", id).Delete(&models.OrderItem{}).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus item pesanan"})
+		return
+	}
+
+	// Delete payment proofs
+	if err := tx.Where("order_id = ?", id).Delete(&models.PaymentProof{}).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus bukti pembayaran"})
+		return
+	}
+
+	// Delete the order itself
+	if err := tx.Delete(&order).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus pesanan"})
+		return
+	}
+
+	// Commit transaction
+	if err := tx.Commit().Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan perubahan"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Pesanan berhasil dihapus",
+	})
+}
+
 // AdminVerifyPayment verifies or rejects payment proof
 func AdminVerifyPayment(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
