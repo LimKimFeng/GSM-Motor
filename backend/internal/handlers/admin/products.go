@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"log"
 	"math"
 	"net/http"
 	"strconv"
@@ -290,6 +291,9 @@ func BulkPriceUpdate(c *gin.Context) {
 	batchSize := 100
 	now := time.Now()
 
+	// Log start
+	log.Printf("Starting bulk update for %d products with percentage: %f", len(products), req.Percentage)
+
 	for i := 0; i < len(products); i += batchSize {
 		end := i + batchSize
 		if end > len(products) {
@@ -306,6 +310,7 @@ func BulkPriceUpdate(c *gin.Context) {
 					return math.Ceil(price/500) * 500
 				}
 
+				oldPrice := p.Price
 				// Calculate new base price
 				newPrice := p.Price * (1 + req.Percentage/100)
 				newPrice = beautifyPrice(newPrice)
@@ -315,14 +320,12 @@ func BulkPriceUpdate(c *gin.Context) {
 					"last_price_update": now,
 				}
 
-				// Update tiered prices if they exist, maintaining the original discount ratio or applying new ratio
-				// Logic: Apply the same percentage change, then beautify
+				// Update tiered prices if they exist
 				if p.Price3Items != nil && *p.Price3Items > 0 {
 					newPrice3 := *p.Price3Items * (1 + req.Percentage/100)
 					beauty3 := beautifyPrice(newPrice3)
-					// Ensure tier price is not higher than unit price
 					if beauty3 >= newPrice {
-						beauty3 = newPrice - 500 // Min discount
+						beauty3 = newPrice - 500
 					}
 					updates["price_3_items"] = beauty3
 				}
@@ -330,9 +333,9 @@ func BulkPriceUpdate(c *gin.Context) {
 				if p.Price5Items != nil && *p.Price5Items > 0 {
 					newPrice5 := *p.Price5Items * (1 + req.Percentage/100)
 					beauty5 := beautifyPrice(newPrice5)
-					// Ensure tier price 5 is lower than tier price 3
-					price3Val := updates["price_3_items"]
-					if price3Val != nil {
+
+					price3Val, exists := updates["price_3_items"]
+					if exists {
 						if beauty5 >= price3Val.(float64) {
 							beauty5 = price3Val.(float64) - 500
 						}
@@ -342,7 +345,12 @@ func BulkPriceUpdate(c *gin.Context) {
 					updates["price_5_items"] = beauty5
 				}
 
-				database.DB.Model(&p).Updates(updates)
+				// Explicitly use ID and check error
+				if err := database.DB.Model(&models.Product{ID: p.ID}).Updates(updates).Error; err != nil {
+					log.Printf("Error updating product %d: %v", p.ID, err)
+				} else {
+					log.Printf("Updated product %d: %f -> %f", p.ID, oldPrice, newPrice)
+				}
 			}
 		}(products[i:end])
 	}
