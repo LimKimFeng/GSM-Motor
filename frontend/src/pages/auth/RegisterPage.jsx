@@ -267,7 +267,19 @@ export default function RegisterPage() {
                                         placeholder="John Doe"
                                         required
                                     />
-                                    <User className="input-icon" />
+                                    <User
+                                        className="input-icon"
+                                        style={{
+                                            position: 'absolute',
+                                            left: '1rem',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            width: '20px',
+                                            height: '20px',
+                                            color: 'var(--color-neutral-400)',
+                                            pointerEvents: 'none'
+                                        }}
+                                    />
                                 </div>
                             </div>
 
@@ -285,7 +297,19 @@ export default function RegisterPage() {
                                         placeholder="email@example.com"
                                         required
                                     />
-                                    <Mail className="input-icon" />
+                                    <Mail
+                                        className="input-icon"
+                                        style={{
+                                            position: 'absolute',
+                                            left: '1rem',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            width: '20px',
+                                            height: '20px',
+                                            color: 'var(--color-neutral-400)',
+                                            pointerEvents: 'none'
+                                        }}
+                                    />
                                 </div>
                             </div>
 
@@ -303,7 +327,19 @@ export default function RegisterPage() {
                                         placeholder="08123456789"
                                         required
                                     />
-                                    <Phone className="input-icon" />
+                                    <Phone
+                                        className="input-icon"
+                                        style={{
+                                            position: 'absolute',
+                                            left: '1rem',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            width: '20px',
+                                            height: '20px',
+                                            color: 'var(--color-neutral-400)',
+                                            pointerEvents: 'none'
+                                        }}
+                                    />
                                 </div>
                             </div>
 
@@ -323,7 +359,19 @@ export default function RegisterPage() {
                                         required
                                         minLength={6}
                                     />
-                                    <Lock className="input-icon" />
+                                    <Lock
+                                        className="input-icon"
+                                        style={{
+                                            position: 'absolute',
+                                            left: '1rem',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            width: '20px',
+                                            height: '20px',
+                                            color: 'var(--color-neutral-400)',
+                                            pointerEvents: 'none'
+                                        }}
+                                    />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
@@ -388,7 +436,19 @@ export default function RegisterPage() {
                                         placeholder="Ulangi password"
                                         required
                                     />
-                                    <Lock className="input-icon" />
+                                    <Lock
+                                        className="input-icon"
+                                        style={{
+                                            position: 'absolute',
+                                            left: '1rem',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            width: '20px',
+                                            height: '20px',
+                                            color: 'var(--color-neutral-400)',
+                                            pointerEvents: 'none'
+                                        }}
+                                    />
                                 </div>
                                 {form.confirm_password && form.password !== form.confirm_password && (
                                     <p className="text-xs mt-1" style={{ color: 'var(--color-error)' }}>Password tidak cocok</p>

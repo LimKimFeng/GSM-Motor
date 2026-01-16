@@ -213,7 +213,19 @@ export default function LoginPage() {
                                         placeholder="email@example.com"
                                         required
                                     />
-                                    <Mail className="input-icon" />
+                                    <Mail
+                                        className="input-icon"
+                                        style={{
+                                            position: 'absolute',
+                                            left: '1rem',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            width: '20px',
+                                            height: '20px',
+                                            color: 'var(--color-neutral-400)',
+                                            pointerEvents: 'none'
+                                        }}
+                                    />
                                 </div>
                             </div>
 
@@ -232,7 +244,19 @@ export default function LoginPage() {
                                         placeholder="••••••••"
                                         required
                                     />
-                                    <Lock className="input-icon" />
+                                    <Lock
+                                        className="input-icon"
+                                        style={{
+                                            position: 'absolute',
+                                            left: '1rem',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            width: '20px',
+                                            height: '20px',
+                                            color: 'var(--color-neutral-400)',
+                                            pointerEvents: 'none'
+                                        }}
+                                    />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
