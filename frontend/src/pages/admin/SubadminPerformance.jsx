@@ -112,9 +112,6 @@ export default function SubadminPerformance() {
                         <TrendingUp className="w-5 h-5 text-gsm-orange" />
                         Statistik Upload Produk per Subadmin
                     </h2>
-                    <p className="text-xs text-gray-500 mt-1">
-                        * Nama bersifat case-sensitive. "Aurel" dan "aurel" dihitung sebagai orang berbeda.
-                    </p>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -149,9 +146,9 @@ export default function SubadminPerformance() {
                                         <tr key={stat.name} className="hover:bg-gray-50">
                                             <td className="px-4 py-3">
                                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${index === 0 ? 'bg-yellow-100 text-yellow-700' :
-                                                        index === 1 ? 'bg-gray-200 text-gray-700' :
-                                                            index === 2 ? 'bg-orange-100 text-orange-700' :
-                                                                'bg-gray-100 text-gray-600'
+                                                    index === 1 ? 'bg-gray-200 text-gray-700' :
+                                                        index === 2 ? 'bg-orange-100 text-orange-700' :
+                                                            'bg-gray-100 text-gray-600'
                                                     }`}>
                                                     {index + 1}
                                                 </div>

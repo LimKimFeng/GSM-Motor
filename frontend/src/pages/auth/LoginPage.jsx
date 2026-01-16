@@ -97,7 +97,7 @@ export default function LoginPage() {
                     style={{ position: 'relative', zIndex: 10, padding: '4rem', width: '100%' }}
                 >
                     <div style={{ maxWidth: '28rem' }}>
-                        <div className="flex items-center gap-3 mb-8">
+                        <div className="flex items-center gap-3 mb-8" style={{ animation: 'slideUp 0.6s ease-out' }}>
                             <div
                                 className="flex items-center justify-center rounded-2xl overflow-hidden"
                                 style={{
@@ -105,7 +105,8 @@ export default function LoginPage() {
                                     height: '56px',
                                     background: 'rgba(255, 255, 255, 0.2)',
                                     backdropFilter: 'blur(4px)',
-                                    border: '1px solid rgba(255, 255, 255, 0.3)'
+                                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                                    animation: 'float 4s ease-in-out infinite'
                                 }}
                             >
                                 <img src="/logo.webp" alt="GSM Motor" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
@@ -116,23 +117,30 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        <h2 className="text-4xl font-bold text-white mb-4" style={{ lineHeight: '1.2' }}>
+                        <h2 className="text-4xl font-bold text-white mb-4" style={{ lineHeight: '1.2', animation: 'slideUp 0.6s ease-out 0.1s backwards' }}>
                             Selamat Datang Kembali!
                         </h2>
-                        <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '1.125rem', marginBottom: '2rem' }}>
+                        <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '1.125rem', marginBottom: '2rem', animation: 'slideUp 0.6s ease-out 0.2s backwards' }}>
                             Masuk ke akun Anda untuk melanjutkan belanja sparepart motor berkualitas.
                         </p>
 
                         {/* Feature List */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             {['Akses histori pesanan', 'Simpan alamat pengiriman', 'Dapatkan promo eksklusif'].map((feature, idx) => (
-                                <div key={idx} className="flex items-center gap-3">
+                                <div
+                                    key={idx}
+                                    className="flex items-center gap-3"
+                                    style={{
+                                        animation: `slideUp 0.5s ease-out ${0.3 + idx * 0.1}s backwards`
+                                    }}
+                                >
                                     <div
                                         className="flex items-center justify-center rounded-full"
                                         style={{
                                             width: '24px',
                                             height: '24px',
-                                            background: 'rgba(255, 255, 255, 0.2)'
+                                            background: 'rgba(255, 255, 255, 0.2)',
+                                            transition: 'all 0.3s ease'
                                         }}
                                     >
                                         <Sparkles style={{ width: '14px', height: '14px', color: 'white' }} />
@@ -293,6 +301,16 @@ export default function LoginPage() {
                 @media (min-width: 1024px) {
                     .auth-visual { display: flex !important; }
                     .lg\\:hidden { display: none !important; }
+                }
+
+                /* Floating animation */
+                @keyframes float {
+                    0%, 100% {
+                        transform: translateY(0px);
+                    }
+                    50% {
+                        transform: translateY(-10px);
+                    }
                 }
             `}</style>
         </div>

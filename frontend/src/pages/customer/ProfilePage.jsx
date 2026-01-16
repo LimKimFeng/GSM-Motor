@@ -74,9 +74,10 @@ export default function ProfilePage() {
                 Pengaturan Profil
             </h1>
 
-            <div style={{ maxWidth: '36rem' }}>
-                {/* Profile Info Card */}
-                <div className="card mb-6" style={{ padding: '1.5rem' }}>
+            {/* 2-Column Grid Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Profile Info Card - Left Column */}
+                <div className="card" style={{ padding: '1.5rem' }}>
                     <div className="flex items-center gap-3 mb-6">
                         <div
                             className="flex items-center justify-center rounded-xl"

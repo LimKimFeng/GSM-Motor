@@ -191,78 +191,145 @@ export default function Products() {
 
             {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-                        <div className="flex items-center justify-between p-4 border-b">
-                            <h2 className="font-semibold">{editing ? 'Edit Produk' : 'Tambah Produk'}</h2>
-                            <button onClick={() => setShowModal(false)}><X className="w-5 h-5" /></button>
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={(e) => e.target === e.currentTarget && setShowModal(false)}>
+                    <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <div className="flex items-center justify-between p-6 border-b sticky top-0 bg-white z-10">
+                            <h2 className="text-xl font-bold" style={{ color: 'var(--color-neutral-800)' }}>
+                                {editing ? 'Edit Produk' : 'Tambah Produk'}
+                            </h2>
+                            <button onClick={() => setShowModal(false)} className="p-2 hover:bg-gray-100 rounded-lg transition">
+                                <X className="w-5 h-5" />
+                            </button>
                         </div>
-                        <form onSubmit={handleSubmit} className="p-4 space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Nama</label>
-                                <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input-field" required />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Kategori</label>
-                                <select value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })} className="input-field" required>
-                                    <option value="">Pilih kategori</option>
-                                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                                </select>
-                            </div>
-                            <div className="grid grid-cols-3 gap-2">
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Harga</label>
-                                    <input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="input-field" required />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Harga 3+</label>
-                                    <input type="number" value={form.price_3_items} onChange={(e) => setForm({ ...form, price_3_items: e.target.value })} className="input-field" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Harga 5+</label>
-                                    <input type="number" value={form.price_5_items} onChange={(e) => setForm({ ...form, price_5_items: e.target.value })} className="input-field" />
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-2">
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Stok</label>
-                                    <input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className="input-field" required />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Berat (gram)</label>
-                                    <input type="number" value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} className="input-field" required />
-                                </div>
-                            </div>
 
-                            {/* Submit By Input */}
-                            <div>
-                                <label className="block text-sm font-medium mb-1 text-blue-600">
-                                    <UserCheck className="w-4 h-4 inline mr-1" />
-                                    Submit by (Nama Pengupload)
+                        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                            {/* Image Upload Section - TOP */}
+                            <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border-2 border-dashed border-orange-300">
+                                <label className="block text-sm font-semibold mb-3" style={{ color: 'var(--color-primary)' }}>
+                                    📸 Gambar Produk
                                 </label>
                                 <input
-                                    type="text"
-                                    value={form.submitted_by}
-                                    onChange={(e) => setForm({ ...form, submitted_by: e.target.value })}
+                                    type="file"
+                                    multiple
+                                    accept="image/*"
+                                    onChange={(e) => setImages([...e.target.files])}
                                     className="input-field"
-                                    placeholder="Masukkan nama Anda (case-sensitive)"
+                                    id="image-upload"
                                 />
-                                <p className="text-xs text-gray-500 mt-1">
-                                    * Nama ini akan dicatat untuk tracking kinerja. Penulisan huruf besar/kecil dibedakan.
+                                <p className="text-xs text-gray-600 mt-2">
+                                    Upload hingga 5 gambar. Format: JPG, PNG, GIF, WebP. Otomatis dikonversi ke WebP &lt;500KB
                                 </p>
+
+                                {/* Image Preview */}
+                                {images.length > 0 && (
+                                    <div className="mt-4 grid grid-cols-3 gap-3">
+                                        {Array.from(images).map((img, idx) => (
+                                            <div key={idx} className="relative group">
+                                                <img
+                                                    src={URL.createObjectURL(img)}
+                                                    alt={`Preview ${idx + 1}`}
+                                                    className="w-full h-24 object-cover rounded-lg border-2 border-orange-200"
+                                                />
+                                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center rounded-lg">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setImages(Array.from(images).filter((_, i) => i !== idx))}
+                                                        className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600"
+                                                    >
+                                                        <X className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Product Details - 2 Columns */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-neutral-700)' }}>
+                                        Nama Produk *
+                                    </label>
+                                    <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input-field" placeholder="Contoh: Aki Motor Yuasa 12V" required />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-neutral-700)' }}>
+                                        Kategori *
+                                    </label>
+                                    <select value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })} className="input-field" required>
+                                        <option value="">Pilih kategori</option>
+                                        {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-neutral-700)' }}>
+                                        Stok *
+                                    </label>
+                                    <input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className="input-field" placeholder="100" required />
+                                </div>
+                            </div>
+
+                            {/* Pricing Section */}
+                            <div className="bg-gray-50 rounded-xl p-4">
+                                <h3 className="font-semibold mb-3" style={{ color: 'var(--color-neutral-800)' }}>💰 Harga</h3>
+                                <div className="grid grid-cols-3 gap-3">
+                                    <div>
+                                        <label className="block text-xs font-medium mb-1 text-gray-600">Harga Normal *</label>
+                                        <input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="input-field" placeholder="50000" required />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium mb-1 text-gray-600">Harga 3+ items</label>
+                                        <input type="number" value={form.price_3_items} onChange={(e) => setForm({ ...form, price_3_items: e.target.value })} className="input-field" placeholder="45000" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium mb-1 text-gray-600">Harga 5+ items</label>
+                                        <input type="number" value={form.price_5_items} onChange={(e) => setForm({ ...form, price_5_items: e.target.value })} className="input-field" placeholder="40000" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Additional Info */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-neutral-700)' }}>
+                                        Berat (gram) *
+                                    </label>
+                                    <input type="number" value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} className="input-field" placeholder="500" required />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium mb-2 text-blue-600">
+                                        <UserCheck className="w-4 h-4 inline mr-1" />
+                                        Diupload oleh
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={form.submitted_by}
+                                        onChange={(e) => setForm({ ...form, submitted_by: e.target.value })}
+                                        className="input-field"
+                                        placeholder="Nama Anda"
+                                    />
+                                </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium mb-1">Gambar</label>
-                                <input type="file" multiple accept="image/*" onChange={(e) => setImages([...e.target.files])} className="input-field" />
+                                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-neutral-700)' }}>
+                                    Deskripsi
+                                </label>
+                                <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="input-field" rows={3} placeholder="Deskripsi produk..." />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Deskripsi</label>
-                                <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="input-field" rows={3} />
+
+                            <div className="flex gap-3 pt-2">
+                                <button type="button" onClick={() => setShowModal(false)} className="btn btn-secondary flex-1">
+                                    Batal
+                                </button>
+                                <button type="submit" disabled={saving} className="btn btn-primary flex-1">
+                                    {saving ? 'Menyimpan...' : (editing ? 'Update Produk' : 'Tambah Produk')}
+                                </button>
                             </div>
-                            <button type="submit" disabled={saving} className="btn-primary w-full">
-                                {saving ? 'Menyimpan...' : 'Simpan'}
-                            </button>
                         </form>
                     </div>
                 </div>

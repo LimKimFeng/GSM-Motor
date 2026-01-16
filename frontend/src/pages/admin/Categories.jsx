@@ -103,18 +103,42 @@ export default function Categories() {
             </div>
 
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={(e) => e.target === e.currentTarget && setShowModal(false)}>
                     <div className="bg-white rounded-xl w-full max-w-md">
-                        <div className="flex items-center justify-between p-4 border-b">
-                            <h2 className="font-semibold">{editing ? 'Edit Kategori' : 'Tambah Kategori'}</h2>
-                            <button onClick={() => setShowModal(false)}><X className="w-5 h-5" /></button>
+                        <div className="flex items-center justify-between p-6 border-b">
+                            <h2 className="text-xl font-bold" style={{ color: 'var(--color-neutral-800)' }}>
+                                {editing ? 'Edit Kategori' : 'Tambah Kategori'}
+                            </h2>
+                            <button onClick={() => setShowModal(false)} className="p-2 hover:bg-gray-100 rounded-lg transition">
+                                <X className="w-5 h-5" />
+                            </button>
                         </div>
-                        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+                        <form onSubmit={handleSubmit} className="p-6 space-y-6">
                             <div>
-                                <label className="block text-sm font-medium mb-1">Nama</label>
-                                <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="input-field" required />
+                                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-neutral-700)' }}>
+                                    Nama Kategori *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    className="input-field"
+                                    placeholder="Contoh: Aki & Baterai"
+                                    required
+                                />
+                                <p className="text-xs text-gray-500 mt-2">
+                                    Slug akan dibuat otomatis dari nama kategori
+                                </p>
                             </div>
-                            <button type="submit" disabled={saving} className="btn-primary w-full">{saving ? 'Menyimpan...' : 'Simpan'}</button>
+
+                            <div className="flex gap-3 pt-2">
+                                <button type="button" onClick={() => setShowModal(false)} className="btn btn-secondary flex-1">
+                                    Batal
+                                </button>
+                                <button type="submit" disabled={saving} className="btn btn-primary flex-1">
+                                    {saving ? 'Menyimpan...' : (editing ? 'Update Kategori' : 'Tambah Kategori')}
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>

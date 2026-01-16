@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import {
     Search, ShoppingCart, User, Menu, X, ChevronDown,
-    Home, Package, LogOut, Settings, Truck, Moon, Sun
+    Home, Package, LogOut, Settings, Truck, Clock, Phone, Mail, Heart
 } from 'lucide-react';
 import { useAuthStore, useCartStore, useUIStore } from '../context/store';
 import { productsAPI } from '../services/api';
@@ -18,12 +18,15 @@ export default function Navbar() {
     const [showSearch, setShowSearch] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [categories, setCategories] = useState([]);
+    const [showCategories, setShowCategories] = useState(false);
     const searchRef = useRef(null);
     const userMenuRef = useRef(null);
+    const categoryRef = useRef(null);
 
     useEffect(() => {
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 20);
+            setIsScrolled(window.scrollY > 100);
         };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
@@ -36,12 +39,28 @@ export default function Navbar() {
     }, [isAuthenticated, fetchCount]);
 
     useEffect(() => {
+        // Fetch categories
+        const fetchCategories = async () => {
+            try {
+                const response = await productsAPI.categories();
+                setCategories(response.data.data || response.data.categories || []);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
         const handleClickOutside = (event) => {
             if (searchRef.current && !searchRef.current.contains(event.target)) {
                 setShowSearch(false);
             }
             if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
                 setShowUserMenu(false);
+            }
+            if (categoryRef.current && !categoryRef.current.contains(event.target)) {
+                setShowCategories(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -80,286 +99,341 @@ export default function Navbar() {
     };
 
     return (
-        <header className={`navbar ${isScrolled ? 'navbar-scrolled' : ''}`}>
-            {/* Top Announcement Bar */}
-            <div className="announcement-bar">
-                <div className="container flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <span>🏍️</span>
-                        <span>Selamat datang di GSM Motor</span>
+        <>
+            {/* Main Header */}
+            <header className="main-header">
+                {/* Header Top - Info Bar */}
+                <div className="header-top">
+                    <div className="container">
+                        <div className="header-top-inner">
+                            <ul className="info-list">
+                                <li>
+                                    <Clock size={14} />
+                                    <span>Buka: <strong>Senin - Minggu, 08:00 - 17:00</strong></span>
+                                </li>
+                                <li>
+                                    <Phone size={14} />
+                                    <a href="tel:+6281386363979">0813-8636-3979</a>
+                                </li>
+                            </ul>
+                            <div className="header-top-right">
+                                <div className="shipping-info">
+                                    <Truck size={14} />
+                                    <span>Gratis Ongkir ke Seluruh Indonesia</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <a
-                        href="https://wa.me/6281386363979"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 hover:underline"
-                    >
-                        <span>📞</span>
-                        0813-8636-3979
-                    </a>
                 </div>
-            </div>
 
-            {/* Main Navbar */}
-            <nav className="container py-3">
-                <div className="flex items-center justify-between gap-4">
-                    {/* Logo */}
-                    <Link to="/" className="flex items-center gap-3 shrink-0">
-                        <div
-                            className="flex items-center justify-center rounded-xl shadow-primary overflow-hidden"
-                            style={{
-                                width: '44px',
-                                height: '44px',
-                                background: 'white'
-                            }}
-                        >
-                            <img src="/logo.webp" alt="GSM Motor" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                        </div>
-                        <div className="sm:block hidden">
-                            <h1 className="font-bold" style={{ fontSize: '1.125rem', color: 'var(--color-neutral-800)' }}>
-                                GSM Motor
-                            </h1>
-                            <p className="text-xs text-muted">
-                                Sparepart Motor Terlengkap
-                            </p>
-                        </div>
-                    </Link>
+                {/* Header Upper - Logo, Search, Options */}
+                <div className="header-upper">
+                    <div className="container">
+                        <div className="header-upper-inner">
+                            {/* Logo */}
+                            <Link to="/" className="logo-box">
+                                <img src="/logo.webp" alt="GSM Motor" />
+                                <div className="logo-text">
+                                    <h1>GSM Motor</h1>
+                                    <span>Sparepart Motor Terlengkap</span>
+                                </div>
+                            </Link>
 
-                    {/* Search - Desktop */}
-                    <div className="hidden md:block flex-1" style={{ maxWidth: '32rem', position: 'relative' }} ref={searchRef}>
-                        <form onSubmit={handleSearchSubmit}>
-                            <div style={{ position: 'relative' }}>
-                                <input
-                                    type="text"
-                                    value={searchQuery}
-                                    onChange={(e) => handleSearch(e.target.value)}
-                                    placeholder="Cari sparepart motor..."
-                                    className="input-field input-with-icon"
-                                    style={{ paddingRight: '1rem' }}
-                                />
-                                <Search className="input-icon" />
-                            </div>
-                        </form>
-
-                        {/* Search Results Dropdown */}
-                        {showSearch && searchResults.length > 0 && (
-                            <div className="search-results animate-slide-down">
-                                {searchResults.map((product) => (
-                                    <Link
-                                        key={product.id}
-                                        to={`/produk/${product.slug}`}
-                                        onClick={() => setShowSearch(false)}
-                                        className="search-result-item"
-                                    >
-                                        <div
-                                            className="rounded-lg overflow-hidden bg-gray-100 shrink-0"
-                                            style={{ width: '48px', height: '48px' }}
-                                        >
-                                            <img
-                                                src={product.image_path ? `/api/uploads/${product.image_path}` : '/placeholder.webp'}
-                                                alt={product.name}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </div>
-                                        <div className="flex-1" style={{ minWidth: 0 }}>
-                                            <p className="font-medium text-sm truncate" style={{ color: 'var(--color-neutral-800)' }}>
-                                                {product.name}
-                                            </p>
-                                            <p className="text-sm font-semibold text-primary">
-                                                Rp {product.price?.toLocaleString('id-ID')}
-                                            </p>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-2">
-                        {/* Cart */}
-                        <Link
-                            to="/keranjang"
-                            className="btn-ghost rounded-xl"
-                            style={{ position: 'relative', padding: '0.625rem' }}
-                        >
-                            <ShoppingCart style={{ width: '20px', height: '20px', color: 'var(--color-neutral-600)' }} />
-                            {count > 0 && (
-                                <span
-                                    className="flex items-center justify-center rounded-full text-white font-semibold animate-fade-in"
-                                    style={{
-                                        position: 'absolute',
-                                        top: '-2px',
-                                        right: '-2px',
-                                        width: '20px',
-                                        height: '20px',
-                                        fontSize: '0.75rem',
-                                        background: 'var(--color-primary)',
-                                        boxShadow: 'var(--shadow-primary)'
-                                    }}
-                                >
-                                    {count > 99 ? '99+' : count}
-                                </span>
-                            )}
-                        </Link>
-
-                        {/* User Menu */}
-                        {isAuthenticated ? (
-                            <div className="dropdown" ref={userMenuRef}>
-                                <button
-                                    onClick={() => setShowUserMenu(!showUserMenu)}
-                                    className="flex items-center gap-2 px-3 py-2 rounded-xl transition"
-                                    style={{ background: 'transparent' }}
-                                >
-                                    <div
-                                        className="flex items-center justify-center rounded-xl shadow-md"
-                                        style={{
-                                            width: '36px',
-                                            height: '36px',
-                                            background: 'linear-gradient(135deg, #FF6B35 0%, #E85A2A 100%)'
-                                        }}
-                                    >
-                                        <User style={{ width: '16px', height: '16px', color: 'white' }} />
+                            {/* Search Area */}
+                            <div className="search-area" ref={searchRef}>
+                                <form onSubmit={handleSearchSubmit} className="search-form">
+                                    <div className="search-box">
+                                        <input
+                                            type="text"
+                                            value={searchQuery}
+                                            onChange={(e) => handleSearch(e.target.value)}
+                                            placeholder="Cari sparepart motor..."
+                                        />
+                                        <button type="submit" className="search-btn">
+                                            <Search size={20} />
+                                        </button>
                                     </div>
-                                    <span className="hidden lg:block text-sm font-medium truncate" style={{ maxWidth: '100px', color: 'var(--color-neutral-700)' }}>
-                                        {user?.name}
-                                    </span>
-                                    <ChevronDown
-                                        className="hidden lg:block transition"
-                                        style={{
-                                            width: '16px',
-                                            height: '16px',
-                                            color: 'var(--color-neutral-400)',
-                                            transform: showUserMenu ? 'rotate(180deg)' : 'rotate(0deg)'
-                                        }}
-                                    />
-                                </button>
+                                </form>
 
-                                {showUserMenu && (
-                                    <div className="dropdown-menu" style={{ width: '16rem' }}>
-                                        <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--color-neutral-100)' }}>
-                                            <p className="font-semibold" style={{ color: 'var(--color-neutral-800)' }}>{user?.name}</p>
-                                            <p className="text-xs truncate text-muted">{user?.email}</p>
-                                        </div>
-
-                                        <div className="py-2">
-                                            <Link to="/dashboard" onClick={() => setShowUserMenu(false)} className="dropdown-item">
-                                                <Home style={{ width: '16px', height: '16px', color: 'var(--color-neutral-400)' }} />
-                                                Dashboard
+                                {/* Search Results Dropdown */}
+                                {showSearch && searchResults.length > 0 && (
+                                    <div className="search-results-dropdown animate-slide-down">
+                                        {searchResults.slice(0, 6).map((product) => (
+                                            <Link
+                                                key={product.id}
+                                                to={`/produk/${product.slug}`}
+                                                onClick={() => setShowSearch(false)}
+                                                className="search-result-item"
+                                            >
+                                                <div className="search-result-image">
+                                                    <img
+                                                        src={product.image_path ? `/api/uploads/${product.image_path}` : '/placeholder.webp'}
+                                                        alt={product.name}
+                                                    />
+                                                </div>
+                                                <div className="search-result-info">
+                                                    <p className="search-result-name">{product.name}</p>
+                                                    <p className="search-result-price">
+                                                        Rp {product.price?.toLocaleString('id-ID')}
+                                                    </p>
+                                                </div>
                                             </Link>
-                                            <Link to="/orders" onClick={() => setShowUserMenu(false)} className="dropdown-item">
-                                                <Package style={{ width: '16px', height: '16px', color: 'var(--color-neutral-400)' }} />
-                                                Pesanan Saya
-                                            </Link>
-                                            <Link to="/profil" onClick={() => setShowUserMenu(false)} className="dropdown-item">
-                                                <Settings style={{ width: '16px', height: '16px', color: 'var(--color-neutral-400)' }} />
-                                                Pengaturan Profil
-                                            </Link>
-
-                                            {(user?.role === 'admin' || user?.role === 'subadmin') && (
-                                                <>
-                                                    <div style={{ height: '1px', margin: '0.5rem 1rem', background: 'var(--color-neutral-100)' }} />
-                                                    <Link to="/admin" onClick={() => setShowUserMenu(false)} className="dropdown-item text-primary">
-                                                        <Truck style={{ width: '16px', height: '16px' }} />
-                                                        Panel Admin
-                                                    </Link>
-                                                </>
-                                            )}
-                                        </div>
-
-                                        <div className="border-t py-2" style={{ borderColor: 'var(--color-neutral-100)' }}>
-                                            <button onClick={handleLogout} className="dropdown-item w-full" style={{ color: 'var(--color-error)' }}>
-                                                <LogOut style={{ width: '16px', height: '16px' }} />
-                                                Keluar
-                                            </button>
-                                        </div>
+                                        ))}
                                     </div>
                                 )}
                             </div>
-                        ) : (
-                            <div className="flex items-center gap-2">
-                                <Link to="/login" className="nav-link hidden sm:block">
-                                    Masuk
-                                </Link>
-                                <Link to="/register" className="btn btn-primary hidden sm:flex" style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}>
-                                    Daftar
-                                </Link>
-                            </div>
-                        )}
 
-                        {/* Mobile Menu Toggle */}
-                        <button
-                            onClick={toggleMobileMenu}
-                            className="btn-ghost md:hidden rounded-xl"
-                            style={{ padding: '0.625rem' }}
-                        >
-                            {isMobileMenuOpen ? (
-                                <X style={{ width: '20px', height: '20px', color: 'var(--color-neutral-600)' }} />
-                            ) : (
-                                <Menu style={{ width: '20px', height: '20px', color: 'var(--color-neutral-600)' }} />
-                            )}
-                        </button>
+                            {/* Option Icons */}
+                            <ul className="option-list">
+                                {/* Wishlist */}
+                                <li>
+                                    <Link to="/wishlist" className="option-btn">
+                                        <Heart size={22} />
+                                    </Link>
+                                </li>
+                                {/* Cart */}
+                                <li>
+                                    <Link to="/keranjang" className="option-btn cart-btn">
+                                        <ShoppingCart size={22} />
+                                        {count > 0 && (
+                                            <span className="cart-count">{count > 99 ? '99+' : count}</span>
+                                        )}
+                                    </Link>
+                                </li>
+                                {/* User */}
+                                <li ref={userMenuRef}>
+                                    {isAuthenticated ? (
+                                        <div className="user-dropdown">
+                                            <button
+                                                onClick={() => setShowUserMenu(!showUserMenu)}
+                                                className="option-btn user-btn"
+                                            >
+                                                <User size={22} />
+                                                <ChevronDown
+                                                    size={14}
+                                                    className={`dropdown-arrow ${showUserMenu ? 'rotated' : ''}`}
+                                                />
+                                            </button>
+
+                                            {showUserMenu && (
+                                                <div className="user-dropdown-menu animate-slide-down">
+                                                    <div className="user-info">
+                                                        <p className="user-name">{user?.name}</p>
+                                                        <p className="user-email">{user?.email}</p>
+                                                    </div>
+                                                    <div className="dropdown-divider" />
+                                                    <Link to="/dashboard" onClick={() => setShowUserMenu(false)} className="dropdown-item">
+                                                        <Home size={16} /> Dashboard
+                                                    </Link>
+                                                    <Link to="/orders" onClick={() => setShowUserMenu(false)} className="dropdown-item">
+                                                        <Package size={16} /> Pesanan Saya
+                                                    </Link>
+                                                    <Link to="/profil" onClick={() => setShowUserMenu(false)} className="dropdown-item">
+                                                        <Settings size={16} /> Pengaturan Profil
+                                                    </Link>
+                                                    {(user?.role === 'admin' || user?.role === 'subadmin') && (
+                                                        <>
+                                                            <div className="dropdown-divider" />
+                                                            <Link to="/admin" onClick={() => setShowUserMenu(false)} className="dropdown-item text-primary">
+                                                                <Truck size={16} /> Panel Admin
+                                                            </Link>
+                                                        </>
+                                                    )}
+                                                    <div className="dropdown-divider" />
+                                                    <button onClick={handleLogout} className="dropdown-item logout-btn">
+                                                        <LogOut size={16} /> Keluar
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <Link to="/login" className="option-btn">
+                                            <User size={22} />
+                                        </Link>
+                                    )}
+                                </li>
+                            </ul>
+
+                            {/* Mobile Menu Toggle */}
+                            <button className="mobile-nav-toggler" onClick={toggleMobileMenu}>
+                                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                {/* Mobile Search */}
-                <div className="mt-3 md:hidden">
-                    <form onSubmit={handleSearchSubmit}>
-                        <div style={{ position: 'relative' }}>
+                {/* Header Lower - Navigation */}
+                <div className={`header-lower ${isScrolled ? 'sticky-active' : ''}`}>
+                    <div className="container">
+                        <div className="header-lower-inner">
+                            {/* Categories Dropdown */}
+                            <div className="category-box" ref={categoryRef}>
+                                <button
+                                    className="category-toggle"
+                                    onClick={() => setShowCategories(!showCategories)}
+                                >
+                                    <Menu size={18} />
+                                    <span>Semua Kategori</span>
+                                    <ChevronDown size={16} className={showCategories ? 'rotated' : ''} />
+                                </button>
+
+                                {showCategories && (
+                                    <ul className="category-list animate-slide-down">
+                                        {categories.map((category) => (
+                                            <li key={category.id}>
+                                                <Link
+                                                    to={`/produk?category=${category.id}`}
+                                                    onClick={() => setShowCategories(false)}
+                                                >
+                                                    {category.name}
+                                                </Link>
+                                            </li>
+                                        ))}
+                                        <li className="view-all">
+                                            <Link to="/produk" onClick={() => setShowCategories(false)}>
+                                                Lihat Semua Produk →
+                                            </Link>
+                                        </li>
+                                    </ul>
+                                )}
+                            </div>
+
+                            {/* Main Navigation */}
+                            <nav className="main-menu">
+                                <ul className="navigation">
+                                    <li><Link to="/">Beranda</Link></li>
+                                    <li><Link to="/produk">Produk</Link></li>
+                                    <li><Link to="/produk?sort=newest">Terbaru</Link></li>
+                                    <li><Link to="/produk?sort=popular">Terlaris</Link></li>
+                                </ul>
+                            </nav>
+
+                            {/* Right Content */}
+                            <div className="header-lower-right">
+                                {isAuthenticated ? (
+                                    <Link to="/dashboard" className="account-btn">
+                                        <User size={18} />
+                                        <span>Akun Saya</span>
+                                    </Link>
+                                ) : (
+                                    <Link to="/login" className="account-btn">
+                                        <User size={18} />
+                                        <span>Masuk / Daftar</span>
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            {/* Mobile Menu */}
+            <div className={`mobile-menu ${isMobileMenuOpen ? 'active' : ''}`}>
+                <div className="menu-backdrop" onClick={closeMobileMenu} />
+                <div className="menu-box">
+                    <div className="menu-header">
+                        <Link to="/" className="menu-logo" onClick={closeMobileMenu}>
+                            <img src="/logo.webp" alt="GSM Motor" />
+                        </Link>
+                        <button className="close-btn" onClick={closeMobileMenu}>
+                            <X size={24} />
+                        </button>
+                    </div>
+
+                    {/* Mobile Search */}
+                    <div className="mobile-search">
+                        <form onSubmit={handleSearchSubmit}>
                             <input
                                 type="text"
                                 value={searchQuery}
-                                onChange={(e) => handleSearch(e.target.value)}
-                                placeholder="Cari sparepart motor..."
-                                className="input-field input-with-icon"
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Cari sparepart..."
                             />
-                            <Search className="input-icon" />
-                        </div>
-                    </form>
-                </div>
-            </nav>
+                            <button type="submit">
+                                <Search size={20} />
+                            </button>
+                        </form>
+                    </div>
 
-            {/* Mobile Menu */}
-            {isMobileMenuOpen && (
-                <div className="md:hidden border-t animate-slide-down" style={{ background: 'white', borderColor: 'var(--color-neutral-100)' }}>
-                    <div className="container py-4" style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                        <Link to="/" onClick={closeMobileMenu} className="dropdown-item rounded-xl">
-                            <Home style={{ width: '20px', height: '20px', color: 'var(--color-neutral-500)' }} />
-                            <span className="font-medium">Beranda</span>
-                        </Link>
-                        <Link to="/produk" onClick={closeMobileMenu} className="dropdown-item rounded-xl">
-                            <Package style={{ width: '20px', height: '20px', color: 'var(--color-neutral-500)' }} />
-                            <span className="font-medium">Semua Produk</span>
-                        </Link>
-                        <Link to="/keranjang" onClick={closeMobileMenu} className="dropdown-item rounded-xl">
-                            <ShoppingCart style={{ width: '20px', height: '20px', color: 'var(--color-neutral-500)' }} />
-                            <span className="font-medium">Keranjang</span>
-                            {count > 0 && (
-                                <span
-                                    className="ml-auto rounded-full text-white text-xs font-semibold"
-                                    style={{
-                                        background: 'var(--color-primary)',
-                                        padding: '0.125rem 0.625rem'
-                                    }}
-                                >
-                                    {count}
-                                </span>
+                    {/* Mobile Navigation */}
+                    <nav className="mobile-nav">
+                        <ul>
+                            <li>
+                                <Link to="/" onClick={closeMobileMenu}>
+                                    <Home size={20} /> Beranda
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/produk" onClick={closeMobileMenu}>
+                                    <Package size={20} /> Semua Produk
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/keranjang" onClick={closeMobileMenu}>
+                                    <ShoppingCart size={20} />
+                                    Keranjang
+                                    {count > 0 && <span className="badge">{count}</span>}
+                                </Link>
+                            </li>
+                        </ul>
+
+                        {/* Categories in Mobile */}
+                        <div className="mobile-categories">
+                            <h4>Kategori</h4>
+                            <ul>
+                                {categories.slice(0, 8).map((category) => (
+                                    <li key={category.id}>
+                                        <Link
+                                            to={`/produk?category=${category.id}`}
+                                            onClick={closeMobileMenu}
+                                        >
+                                            {category.name}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Auth Links */}
+                        <div className="mobile-auth">
+                            {isAuthenticated ? (
+                                <>
+                                    <Link to="/dashboard" onClick={closeMobileMenu} className="auth-link">
+                                        <User size={20} /> {user?.name}
+                                    </Link>
+                                    <button onClick={() => { handleLogout(); closeMobileMenu(); }} className="logout-link">
+                                        <LogOut size={20} /> Keluar
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link to="/login" onClick={closeMobileMenu} className="btn-login-mobile">
+                                        Masuk
+                                    </Link>
+                                    <Link to="/register" onClick={closeMobileMenu} className="btn-register-mobile">
+                                        Daftar
+                                    </Link>
+                                </>
                             )}
-                        </Link>
-                        {!isAuthenticated && (
-                            <>
-                                <div style={{ height: '1px', margin: '0.5rem 0', background: 'var(--color-neutral-100)' }} />
-                                <Link to="/login" onClick={closeMobileMenu} className="btn btn-secondary w-full">
-                                    Masuk
-                                </Link>
-                                <Link to="/register" onClick={closeMobileMenu} className="btn btn-primary w-full">
-                                    Daftar
-                                </Link>
-                            </>
-                        )}
+                        </div>
+                    </nav>
+
+                    {/* Contact Info */}
+                    <div className="mobile-contact">
+                        <h4>Hubungi Kami</h4>
+                        <ul>
+                            <li>
+                                <Phone size={16} />
+                                <a href="tel:+6281386363979">0813-8636-3979</a>
+                            </li>
+                            <li>
+                                <Mail size={16} />
+                                <a href="mailto:landpeace.07@gmail.com">landpeace.07@gmail.com</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            )}
-        </header>
+            </div>
+        </>
     );
 }

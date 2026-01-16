@@ -53,16 +53,15 @@ export default function AdminLayout() {
                     <Menu style={{ width: '24px', height: '24px', color: 'var(--color-neutral-600)' }} />
                 </button>
                 <div className="flex items-center gap-2">
-                    <div
-                        className="flex items-center justify-center rounded-lg"
+                    <img
+                        src="/logo.webp"
+                        alt="GSM Motor"
                         style={{
                             width: '32px',
                             height: '32px',
-                            background: 'linear-gradient(135deg, #FF6B35 0%, #E85A2A 100%)'
+                            objectFit: 'contain'
                         }}
-                    >
-                        <span className="text-white font-bold text-sm">GSM</span>
-                    </div>
+                    />
                     <span className="font-bold" style={{ color: 'var(--color-neutral-800)' }}>Admin</span>
                 </div>
                 <Link to="/" style={{ padding: '0.5rem' }}>
@@ -100,17 +99,16 @@ export default function AdminLayout() {
                     style={{ padding: '1.25rem', borderBottom: '1px solid var(--color-dark-border)' }}
                 >
                     <div className="flex items-center gap-3">
-                        <div
-                            className="flex items-center justify-center rounded-xl"
+                        <img
+                            src="/logo.webp"
+                            alt="GSM Motor"
                             style={{
                                 width: '44px',
                                 height: '44px',
-                                background: 'linear-gradient(135deg, #FF6B35 0%, #E85A2A 100%)',
-                                boxShadow: 'var(--shadow-primary)'
+                                objectFit: 'contain',
+                                borderRadius: '8px'
                             }}
-                        >
-                            <span className="text-white font-bold">GSM</span>
-                        </div>
+                        />
                         <div>
                             <h1 className="font-bold text-white" style={{ fontSize: '1rem' }}>GSM Motor</h1>
                             <p className="text-xs" style={{ color: 'var(--color-neutral-500)' }}>Admin Panel</p>

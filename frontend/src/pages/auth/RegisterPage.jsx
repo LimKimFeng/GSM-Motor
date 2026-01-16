@@ -134,13 +134,14 @@ export default function RegisterPage() {
                     style={{ position: 'relative', zIndex: 10, padding: '4rem', width: '100%' }}
                 >
                     <div style={{ maxWidth: '28rem' }}>
-                        <div className="flex items-center gap-3 mb-8">
+                        <div className="flex items-center gap-3 mb-8" style={{ animation: 'slideUp 0.6s ease-out' }}>
                             <div
                                 className="flex items-center justify-center rounded-2xl shadow-primary overflow-hidden"
                                 style={{
                                     width: '56px',
                                     height: '56px',
-                                    background: 'white'
+                                    background: 'white',
+                                    animation: 'float 4s ease-in-out infinite'
                                 }}
                             >
                                 <img src="/logo.webp" alt="GSM Motor" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
@@ -151,10 +152,10 @@ export default function RegisterPage() {
                             </div>
                         </div>
 
-                        <h2 className="text-4xl font-bold text-white mb-4" style={{ lineHeight: '1.2' }}>
+                        <h2 className="text-4xl font-bold text-white mb-4" style={{ lineHeight: '1.2', animation: 'slideUp 0.6s ease-out 0.1s backwards' }}>
                             Bergabung Bersama Kami
                         </h2>
-                        <p className="text-muted mb-10" style={{ fontSize: '1.125rem' }}>
+                        <p className="text-muted mb-10" style={{ fontSize: '1.125rem', animation: 'slideUp 0.6s ease-out 0.2s backwards' }}>
                             Daftar sekarang dan nikmati berbagai keuntungan sebagai member GSM Motor.
                         </p>
 
@@ -165,14 +166,21 @@ export default function RegisterPage() {
                                 { icon: Zap, title: 'Checkout Cepat', desc: 'Simpan data untuk transaksi mudah' },
                                 { icon: Shield, title: 'Keamanan Terjamin', desc: 'Data Anda dilindungi enkripsi' },
                             ].map((benefit, idx) => (
-                                <div key={idx} className="flex items-start gap-4">
+                                <div
+                                    key={idx}
+                                    className="flex items-start gap-4"
+                                    style={{
+                                        animation: `slideUp 0.5s ease-out ${0.3 + idx * 0.1}s backwards`
+                                    }}
+                                >
                                     <div
                                         className="flex items-center justify-center rounded-xl shrink-0"
                                         style={{
                                             width: '48px',
                                             height: '48px',
-                                            background: 'rgba(255, 255, 255, 0.05)',
-                                            border: '1px solid rgba(255, 255, 255, 0.1)'
+                                            background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.2) 0%, rgba(255, 107, 53, 0.05) 100%)',
+                                            border: '1px solid rgba(255, 107, 53, 0.3)',
+                                            transition: 'all 0.3s ease'
                                         }}
                                     >
                                         <benefit.icon style={{ width: '20px', height: '20px', color: 'var(--color-primary)' }} />
@@ -339,16 +347,21 @@ export default function RegisterPage() {
                                             {[1, 2, 3, 4, 5].map((level) => (
                                                 <div
                                                     key={level}
-                                                    className="flex-1 rounded-full"
+                                                    className="flex-1 rounded-full password-strength-bar"
                                                     style={{
                                                         height: '4px',
-                                                        background: level <= passwordStrength.score ? passwordStrength.color : 'var(--color-neutral-200)'
+                                                        background: level <= passwordStrength.score
+                                                            ? `linear-gradient(90deg, ${passwordStrength.color}, ${passwordStrength.color}bb)`
+                                                            : 'var(--color-neutral-200)',
+                                                        transform: level <= passwordStrength.score ? 'scaleX(1)' : 'scaleX(0.95)',
+                                                        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                        transformOrigin: 'left'
                                                     }}
                                                 />
                                             ))}
                                         </div>
                                         <p className="text-xs text-muted">
-                                            Kekuatan: <span className="font-medium">{passwordStrength.label}</span>
+                                            Kekuatan: <span className="font-medium" style={{ color: passwordStrength.color }}>{passwordStrength.label}</span>
                                         </p>
                                     </div>
                                 )}
@@ -426,6 +439,34 @@ export default function RegisterPage() {
                 @media (min-width: 1024px) {
                     .auth-visual { display: flex !important; }
                     .lg\\:hidden { display: none !important; }
+                }
+
+                /* Floating animation */
+                @keyframes float {
+                    0%, 100% {
+                        transform: translateY(0px);
+                    }
+                    50% {
+                        transform: translateY(-10px);
+                    }
+                }
+
+                /* Custom scrollbar for form container */
+                .auth-form-container::-webkit-scrollbar {
+                    width: 6px;
+                }
+
+                .auth-form-container::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+
+                .auth-form-container::-webkit-scrollbar-thumb {
+                    background: rgba(255, 107, 53, 0.3);
+                    border-radius: 3px;
+                }
+
+                .auth-form-container::-webkit-scrollbar-thumb:hover {
+                    background: rgba(255, 107, 53, 0.5);
                 }
             `}</style>
         </div>

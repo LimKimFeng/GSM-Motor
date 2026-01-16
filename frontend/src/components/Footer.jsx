@@ -1,262 +1,148 @@
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Clock, MessageCircle, Facebook, Instagram, Youtube, Send } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, MessageCircle, Send } from 'lucide-react';
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="footer">
-            {/* Newsletter Section */}
-            <div style={{ borderBottom: '1px solid var(--color-neutral-800)' }}>
-                <div className="container py-10">
-                    <div className="flex flex-col md:flex items-center justify-between gap-6" style={{ flexDirection: 'row' }}>
-                        <div>
-                            <h3 className="text-xl font-bold text-white mb-2">
-                                Dapatkan Update Terbaru
-                            </h3>
-                            <p className="text-sm text-muted">
-                                Promo eksklusif & produk baru langsung ke inbox Anda
+        <footer className="main-footer">
+            {/* Widget Section */}
+            <div className="widget-section">
+                <div className="container">
+                    <div className="footer-widgets">
+                        {/* Logo Widget */}
+                        <div className="footer-widget logo-widget">
+                            <Link to="/" className="footer-logo">
+                                <img src="/logo.webp" alt="GSM Motor" />
+                            </Link>
+                            <p>
+                                Pusat sparepart motor terlengkap dengan harga terjangkau.
+                                Melayani pengiriman ke seluruh Indonesia dengan garansi 100% original.
                             </p>
-                        </div>
-                        <div className="flex w-full" style={{ maxWidth: '24rem' }}>
-                            <input
-                                type="email"
-                                placeholder="Masukkan email Anda"
-                                className="flex-1 text-sm"
-                                style={{
-                                    padding: '0.75rem 1rem',
-                                    background: 'var(--color-neutral-800)',
-                                    border: '1px solid var(--color-neutral-700)',
-                                    borderRadius: 'var(--radius-lg) 0 0 var(--radius-lg)',
-                                    color: 'white',
-                                    outline: 'none'
-                                }}
-                            />
-                            <button
-                                className="flex items-center gap-2 font-semibold text-white transition"
-                                style={{
-                                    padding: '0.75rem 1.25rem',
-                                    background: 'var(--color-primary)',
-                                    borderRadius: '0 var(--radius-lg) var(--radius-lg) 0'
-                                }}
-                            >
-                                <Send style={{ width: '16px', height: '16px' }} />
-                                <span className="hidden sm:inline">Subscribe</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Main Footer */}
-            <div className="container py-12">
-                <div className="grid gap-10" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-                    {/* About */}
-                    <div>
-                        <div className="flex items-center gap-3 mb-5">
-                            <div
-                                className="flex items-center justify-center rounded-xl shadow-primary"
-                                style={{
-                                    width: '48px',
-                                    height: '48px',
-                                    background: 'linear-gradient(135deg, #FF6B35 0%, #E85A2A 100%)'
-                                }}
-                            >
-                                <span className="text-white font-bold" style={{ fontSize: '1.125rem' }}>GSM</span>
-                            </div>
-                            <div>
-                                <h3 className="font-bold text-white" style={{ fontSize: '1.125rem' }}>GSM Motor</h3>
-                                <p className="text-xs text-muted">Est. 2020</p>
+                            <div className="newsletter-form">
+                                <h5>Newsletter</h5>
+                                <form>
+                                    <div className="form-group">
+                                        <input type="email" placeholder="Email Address" required />
+                                        <button type="submit">
+                                            <Send size={18} />
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-                        <p className="text-sm mb-5" style={{ color: 'var(--color-neutral-400)', lineHeight: '1.7' }}>
-                            Pusat sparepart motor terlengkap dengan harga terjangkau.
-                            Melayani pengiriman ke seluruh Indonesia dengan garansi 100% original.
-                        </p>
-                        <a
-                            href="https://wa.me/6281386363979"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 font-medium text-white rounded-xl transition"
-                            style={{
-                                padding: '0.625rem 1.25rem',
-                                background: '#22C55E'
-                            }}
-                        >
-                            <MessageCircle style={{ width: '20px', height: '20px' }} />
-                            Chat WhatsApp
-                        </a>
-                    </div>
 
-                    {/* Quick Links */}
-                    <div>
-                        <h4 className="font-semibold text-white mb-5 text-sm uppercase tracking-wide">
-                            Link Cepat
-                        </h4>
-                        <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                            {[
-                                { to: '/', label: 'Beranda' },
-                                { to: '/produk', label: 'Semua Produk' },
-                                { to: '/keranjang', label: 'Keranjang Belanja' },
-                                { to: '/login', label: 'Login / Daftar' },
-                            ].map((link) => (
-                                <li key={link.to}>
-                                    <Link to={link.to} className="footer-link flex items-center gap-2 text-sm">
-                                        <span
-                                            className="rounded-full"
-                                            style={{
-                                                width: '6px',
-                                                height: '6px',
-                                                background: 'var(--color-neutral-600)'
-                                            }}
-                                        />
-                                        {link.label}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Contact */}
-                    <div>
-                        <h4 className="font-semibold text-white mb-5 text-sm uppercase tracking-wide">
-                            Hubungi Kami
-                        </h4>
-                        <ul style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            <li className="flex items-start gap-3">
-                                <div
-                                    className="flex items-center justify-center rounded-lg shrink-0"
-                                    style={{
-                                        width: '36px',
-                                        height: '36px',
-                                        background: 'var(--color-neutral-800)'
-                                    }}
-                                >
-                                    <Phone style={{ width: '16px', height: '16px', color: 'var(--color-primary)' }} />
-                                </div>
-                                <div>
-                                    <p className="text-sm text-white font-medium">0813-8636-3979</p>
-                                    <p className="text-xs text-muted">WhatsApp / Telepon</p>
-                                </div>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <div
-                                    className="flex items-center justify-center rounded-lg shrink-0"
-                                    style={{
-                                        width: '36px',
-                                        height: '36px',
-                                        background: 'var(--color-neutral-800)'
-                                    }}
-                                >
-                                    <Mail style={{ width: '16px', height: '16px', color: 'var(--color-primary)' }} />
-                                </div>
-                                <div>
-                                    <p className="text-sm text-white font-medium">landpeace.07@gmail.com</p>
-                                    <p className="text-xs text-muted">Email Support</p>
-                                </div>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <div
-                                    className="flex items-center justify-center rounded-lg shrink-0"
-                                    style={{
-                                        width: '36px',
-                                        height: '36px',
-                                        background: 'var(--color-neutral-800)'
-                                    }}
-                                >
-                                    <Clock style={{ width: '16px', height: '16px', color: 'var(--color-primary)' }} />
-                                </div>
-                                <div>
-                                    <p className="text-sm text-white font-medium">Senin - Minggu</p>
-                                    <p className="text-xs text-muted">08:00 - 17:00 WIB</p>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {/* Payment & Shipping */}
-                    <div>
-                        <h4 className="font-semibold text-white mb-5 text-sm uppercase tracking-wide">
-                            Pengiriman
-                        </h4>
-                        <div className="flex flex-wrap gap-2 mb-6">
-                            {['JNE', 'J&T', 'Grab', 'Gojek'].map((courier) => (
-                                <span
-                                    key={courier}
-                                    className="text-xs font-medium rounded-lg"
-                                    style={{
-                                        padding: '0.375rem 0.75rem',
-                                        background: 'var(--color-neutral-800)',
-                                        border: '1px solid var(--color-neutral-700)',
-                                        color: 'var(--color-neutral-300)'
-                                    }}
-                                >
-                                    {courier}
-                                </span>
-                            ))}
+                        {/* Resources Links */}
+                        <div className="footer-widget links-widget">
+                            <div className="widget-title">
+                                <h4>Navigasi</h4>
+                            </div>
+                            <div className="widget-content">
+                                <ul className="links-list">
+                                    <li><Link to="/">Beranda</Link></li>
+                                    <li><Link to="/produk">Produk</Link></li>
+                                    <li><Link to="/keranjang">Keranjang</Link></li>
+                                    <li><Link to="/produk?sort=newest">Produk Baru</Link></li>
+                                    <li><Link to="/produk?sort=popular">Terlaris</Link></li>
+                                </ul>
+                            </div>
                         </div>
 
-                        <h4 className="font-semibold text-white mb-4 text-sm uppercase tracking-wide">
-                            Pembayaran
-                        </h4>
-                        <div className="flex flex-wrap gap-2 mb-6">
-                            {['Transfer Bank'].map((method) => (
-                                <span
-                                    key={method}
-                                    className="text-xs font-medium rounded-lg"
-                                    style={{
-                                        padding: '0.375rem 0.75rem',
-                                        background: 'var(--color-neutral-800)',
-                                        border: '1px solid var(--color-neutral-700)',
-                                        color: 'var(--color-neutral-300)'
-                                    }}
-                                >
-                                    {method}
-                                </span>
-                            ))}
+                        {/* Support Links */}
+                        <div className="footer-widget links-widget">
+                            <div className="widget-title">
+                                <h4>Dukungan</h4>
+                            </div>
+                            <div className="widget-content">
+                                <ul className="links-list">
+                                    <li><Link to="/login">Masuk</Link></li>
+                                    <li><Link to="/register">Daftar</Link></li>
+                                    <li><Link to="/orders">Pesanan Saya</Link></li>
+                                    <li><Link to="/profil">Profil</Link></li>
+                                    <li><a href="https://wa.me/6281386363979" target="_blank" rel="noopener noreferrer">Hubungi Kami</a></li>
+                                </ul>
+                            </div>
                         </div>
 
-                        {/* Social Links */}
-                        <h4 className="font-semibold text-white mb-4 text-sm uppercase tracking-wide">
-                            Ikuti Kami
-                        </h4>
-                        <div className="flex gap-2">
-                            {[
-                                { icon: Facebook, label: 'Facebook' },
-                                { icon: Instagram, label: 'Instagram' },
-                                { icon: Youtube, label: 'YouTube' },
-                            ].map(({ icon: Icon, label }) => (
+                        {/* Contact Widget */}
+                        <div className="footer-widget contact-widget">
+                            <div className="widget-title">
+                                <h4>Hubungi Kami</h4>
+                            </div>
+                            <div className="widget-content">
+                                <ul className="contact-list">
+                                    <li>
+                                        <MapPin size={18} />
+                                        <span>Bekasi, Jawa Barat, Indonesia</span>
+                                    </li>
+                                    <li>
+                                        <Mail size={18} />
+                                        <a href="mailto:landpeace.07@gmail.com">landpeace.07@gmail.com</a>
+                                    </li>
+                                    <li>
+                                        <Phone size={18} />
+                                        <a href="tel:+6281386363979">0813-8636-3979</a>
+                                    </li>
+                                    <li>
+                                        <Clock size={18} />
+                                        <span>Senin - Minggu, 08:00 - 17:00</span>
+                                    </li>
+                                </ul>
+
+                                {/* WhatsApp Button */}
                                 <a
-                                    key={label}
-                                    href="#"
-                                    aria-label={label}
-                                    className="flex items-center justify-center rounded-lg transition"
-                                    style={{
-                                        width: '40px',
-                                        height: '40px',
-                                        background: 'var(--color-neutral-800)',
-                                        border: '1px solid var(--color-neutral-700)',
-                                        color: 'var(--color-neutral-400)'
-                                    }}
+                                    href="https://wa.me/6281386363979"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="whatsapp-btn"
                                 >
-                                    <Icon style={{ width: '16px', height: '16px' }} />
+                                    <MessageCircle size={20} />
+                                    Chat WhatsApp
                                 </a>
-                            ))}
+
+                                {/* Social Links */}
+                                <ul className="social-links">
+                                    <li>
+                                        <a href="#" aria-label="Facebook">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                                            </svg>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" aria-label="Instagram">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                                            </svg>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" aria-label="YouTube">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                                            </svg>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Bottom Bar */}
-            <div style={{ borderTop: '1px solid var(--color-neutral-800)' }}>
-                <div className="container py-5">
-                    <div className="flex flex-col md:flex justify-between items-center gap-3" style={{ flexDirection: 'row' }}>
-                        <p className="text-sm text-muted">
-                            © {currentYear} GSM Motor. All rights reserved.
-                        </p>
-                        <p className="text-sm text-muted flex items-center gap-1">
-                            Made with <span style={{ color: '#EF4444' }}>❤️</span> for Indonesian Bikers
-                        </p>
+            {/* Footer Bottom */}
+            <div className="footer-bottom">
+                <div className="container">
+                    <div className="bottom-inner">
+                        <div className="copyright">
+                            <p>Copyright © {currentYear} <Link to="/">GSM Motor</Link>, All Rights Reserved</p>
+                        </div>
+                        <ul className="footer-payment">
+                            <li><span className="payment-badge">Transfer Bank</span></li>
+                            <li><span className="payment-badge">BCA</span></li>
+                            <li><span className="payment-badge">Mandiri</span></li>
+                            <li><span className="payment-badge">BNI</span></li>
+                        </ul>
                     </div>
                 </div>
             </div>

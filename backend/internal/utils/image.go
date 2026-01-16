@@ -15,6 +15,7 @@ import (
 
 	"gsm-motor/internal/config"
 
+	"github.com/chai2010/webp"
 	"github.com/disintegration/imaging"
 	"github.com/google/uuid"
 )
@@ -26,6 +27,7 @@ type ImageProcessor struct {
 	MaxWidth      int
 	MaxHeight     int
 	Quality       int
+	MaxFileSize   int64 // in bytes
 }
 
 // NewImageProcessor creates a new image processor with defaults
@@ -35,7 +37,8 @@ func NewImageProcessor() *ImageProcessor {
 		WatermarkPath: config.AppConfig.WatermarkPath,
 		MaxWidth:      800,
 		MaxHeight:     800,
-		Quality:       80,
+		Quality:       85,
+		MaxFileSize:   500 * 1024, // 500KB
 	}
 }
 
@@ -78,14 +81,36 @@ func (ip *ImageProcessor) ProcessAndSave(file *multipart.FileHeader, subDir stri
 		return "", fmt.Errorf("failed to create directory: %w", err)
 	}
 
-	// Save as WebP (using PNG as fallback since imaging doesn't support WebP natively)
-	// For true WebP support, we save as PNG with .webp extension
-	// In production, use a proper WebP encoder like github.com/chai2010/webp
-	if err := imaging.Save(img, fullPath); err != nil {
+	// Save as WebP with compression to ensure size < 500KB
+	if err := ip.saveAsWebP(img, fullPath); err != nil {
 		return "", fmt.Errorf("failed to save image: %w", err)
 	}
 
 	return relPath, nil
+}
+
+// saveAsWebP saves image as WebP format with automatic quality adjustment to meet size limit
+func (ip *ImageProcessor) saveAsWebP(img image.Image, fullPath string) error {
+	quality := float32(ip.Quality)
+
+	for quality >= 60 {
+		// Encode to WebP
+		var buf bytes.Buffer
+		if err := webp.Encode(&buf, img, &webp.Options{Quality: quality}); err != nil {
+			return err
+		}
+
+		// Check file size
+		if int64(buf.Len()) <= ip.MaxFileSize || quality <= 60 {
+			// Size is acceptable or we've reached minimum quality
+			return os.WriteFile(fullPath, buf.Bytes(), 0644)
+		}
+
+		// Reduce quality and try again
+		quality -= 5
+	}
+
+	return fmt.Errorf("unable to compress image below size limit")
 }
 
 // ProcessBannerAndSave processes banner image with larger dimensions
@@ -114,7 +139,13 @@ func (ip *ImageProcessor) ProcessBannerAndSave(file *multipart.FileHeader) (stri
 		return "", fmt.Errorf("failed to create directory: %w", err)
 	}
 
-	if err := imaging.Save(img, fullPath); err != nil {
+	// Use higher quality for banners but still ensure reasonable file size
+	tempMaxSize := ip.MaxFileSize
+	ip.MaxFileSize = 800 * 1024 // 800KB for banners
+	err = ip.saveAsWebP(img, fullPath)
+	ip.MaxFileSize = tempMaxSize // Restore original
+
+	if err != nil {
 		return "", fmt.Errorf("failed to save image: %w", err)
 	}
 
@@ -174,7 +205,7 @@ func IsValidImageType(file *multipart.FileHeader) bool {
 			return true
 		}
 	}
-	
+
 	// Also check extension
 	ext := strings.ToLower(filepath.Ext(file.Filename))
 	validExts := []string{".jpg", ".jpeg", ".png", ".gif", ".webp"}
@@ -183,7 +214,7 @@ func IsValidImageType(file *multipart.FileHeader) bool {
 			return true
 		}
 	}
-	
+
 	return false
 }
 
@@ -213,7 +244,7 @@ func (ip *ImageProcessor) ProcessPaymentProof(file *multipart.FileHeader) (strin
 		return "", fmt.Errorf("failed to create directory: %w", err)
 	}
 
-	if err := imaging.Save(img, fullPath); err != nil {
+	if err := ip.saveAsWebP(img, fullPath); err != nil {
 		return "", fmt.Errorf("failed to save image: %w", err)
 	}
 
@@ -225,7 +256,7 @@ func CopyReaderToFile(src io.Reader, destPath string) error {
 	if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
 		return err
 	}
-	
+
 	dest, err := os.Create(destPath)
 	if err != nil {
 		return err
@@ -236,7 +267,7 @@ func CopyReaderToFile(src io.Reader, destPath string) error {
 	if _, err := io.Copy(buf, src); err != nil {
 		return err
 	}
-	
+
 	_, err = dest.Write(buf.Bytes())
 	return err
 }

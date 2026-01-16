@@ -63,11 +63,32 @@ export default function CartPage() {
     if (items.length === 0) {
         return (
             <div className="container mx-auto px-4 py-20 text-center">
-                <ShoppingCart className="w-20 h-20 mx-auto text-gray-300 mb-4" />
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Keranjang Kosong</h2>
-                <p className="text-gray-500 mb-6">Belum ada produk di keranjang belanja Anda</p>
-                <Link to="/produk" className="btn-primary">
-                    Mulai Belanja
+                <div
+                    className="w-32 h-32 mx-auto mb-6 rounded-full flex items-center justify-center"
+                    style={{
+                        background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
+                        boxShadow: 'var(--shadow-lg)'
+                    }}
+                >
+                    <ShoppingCart className="w-16 h-16 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-neutral-800)' }}>
+                    Keranjang Belanja Kosong
+                </h2>
+                <p className="text-muted mb-8 max-w-md mx-auto">
+                    Yuk mulai belanja dan tambahkan produk favoritmu ke keranjang!
+                </p>
+                <Link
+                    to="/produk"
+                    className="btn btn-primary inline-flex items-center gap-2"
+                    style={{
+                        padding: '14px 32px',
+                        fontSize: '1.0625rem',
+                        fontWeight: '600'
+                    }}
+                >
+                    <ShoppingCart style={{ width: '20px', height: '20px' }} />
+                    Mulai Belanja Sekarang
                 </Link>
             </div>
         );
