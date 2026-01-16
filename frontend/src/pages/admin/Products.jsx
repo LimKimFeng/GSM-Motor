@@ -146,7 +146,7 @@ export default function Products() {
                                             <tr key={p.id} className="hover:bg-gray-50">
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-[100px] h-[100px] shrink-0 overflow-hidden rounded-lg border border-gray-200">
+                                                        <div style={{ width: '100px', height: '100px' }} className="shrink-0 overflow-hidden rounded-lg border border-gray-200">
                                                             <img
                                                                 src={p.image_path ? `${import.meta.env.VITE_API_URL?.replace('/api', '')}/uploads/${p.image_path}` : '/placeholder.webp'}
                                                                 alt={p.name}
