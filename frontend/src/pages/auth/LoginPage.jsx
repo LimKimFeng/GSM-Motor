@@ -212,6 +212,7 @@ export default function LoginPage() {
                                         className="input-field input-with-icon"
                                         placeholder="email@example.com"
                                         required
+                                        autoComplete="email"
                                     />
                                     <Mail
                                         className="input-icon"
@@ -243,6 +244,7 @@ export default function LoginPage() {
                                         style={{ paddingRight: '3rem' }}
                                         placeholder="••••••••"
                                         required
+                                        autoComplete="current-password"
                                     />
                                     <Lock
                                         className="input-icon"

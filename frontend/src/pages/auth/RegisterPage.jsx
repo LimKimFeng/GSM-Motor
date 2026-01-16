@@ -358,6 +358,7 @@ export default function RegisterPage() {
                                         placeholder="Minimal 6 karakter"
                                         required
                                         minLength={6}
+                                        autoComplete="new-password"
                                     />
                                     <Lock
                                         className="input-icon"
@@ -435,6 +436,7 @@ export default function RegisterPage() {
                                         }}
                                         placeholder="Ulangi password"
                                         required
+                                        autoComplete="new-password"
                                     />
                                     <Lock
                                         className="input-icon"

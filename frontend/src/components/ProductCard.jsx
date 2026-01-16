@@ -10,7 +10,7 @@ export default function ProductCard({ product }) {
     const { addToCart } = useCartStore();
 
     const imageUrl = product.image_path
-        ? `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8080'}/uploads/${product.image_path}`
+        ? `${import.meta.env.VITE_API_URL?.replace('/api', '')}/uploads/${product.image_path}`
         : '/placeholder.webp';
 
     const formatPrice = (price) => {
