@@ -56,8 +56,8 @@ go mod tidy
 # Build binary with optimizations
 echo "  → Compiling binary..."
 if [ "$IS_PRODUCTION" = true ]; then
-    # Production build: optimized, no debug symbols
-    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o gsm-motor ./cmd
+    # Production build: CGO enabled for webp support, optimized
+    CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o gsm-motor ./cmd
 else
     # Development build: with debug symbols
     go build -o gsm-motor ./cmd
