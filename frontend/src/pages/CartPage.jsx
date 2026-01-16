@@ -15,7 +15,7 @@ export default function CartPage() {
 
     const getImageUrl = (path) => {
         return path
-            ? `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8080'}/uploads/${path}`
+            ? `${import.meta.env.VITE_API_URL?.replace('/api', '')}/uploads/${path}`
             : '/placeholder.webp';
     };
 
