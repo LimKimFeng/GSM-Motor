@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { useAuthStore } from './context/store';
@@ -87,6 +87,29 @@ function AdminRoute({ children }) {
   return children;
 }
 
+// Super Admin only route
+function SuperAdminRoute({ children }) {
+  const { user, isAuthenticated, isLoading } = useAuthStore();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="w-8 h-8 border-4 border-gsm-orange border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user?.role !== 'admin') {
+    return <Navigate to="/admin/products" replace />;
+  }
+
+  return children;
+}
+
 // Guest only route (for login/register)
 function GuestRoute({ children }) {
   const { isAuthenticated, isLoading } = useAuthStore();
@@ -169,14 +192,24 @@ function App() {
         <Route path="/admin" element={
           <AdminRoute><AdminLayout /></AdminRoute>
         }>
-          <Route index element={<AdminDashboard />} />
+          <Route index element={
+            <SuperAdminRoute><AdminDashboard /></SuperAdminRoute>
+          } />
           <Route path="products" element={<AdminProducts />} />
-          <Route path="orders" element={<AdminOrders />} />
-          <Route path="orders/:id" element={<AdminOrderDetail />} />
+          <Route path="orders" element={
+            <SuperAdminRoute><AdminOrders /></SuperAdminRoute>
+          } />
+          <Route path="orders/:id" element={
+            <SuperAdminRoute><AdminOrderDetail /></SuperAdminRoute>
+          } />
           <Route path="categories" element={<AdminCategories />} />
           <Route path="banners" element={<AdminBanners />} />
-          <Route path="bulk-price" element={<AdminBulkPrice />} />
-          <Route path="subadmin-performance" element={<SubadminPerformance />} />
+          <Route path="bulk-price" element={
+            <SuperAdminRoute><AdminBulkPrice /></SuperAdminRoute>
+          } />
+          <Route path="subadmin-performance" element={
+            <SuperAdminRoute><SubadminPerformance /></SuperAdminRoute>
+          } />
         </Route>
 
         {/* 404 */}

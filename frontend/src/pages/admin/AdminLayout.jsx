@@ -1,9 +1,10 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+
 import {
     LayoutDashboard, Package, ShoppingCart, Folder, Image, DollarSign,
     ChevronLeft, Menu, X, LogOut, Home, Bell, Settings, Users
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuthStore } from '../../context/store';
 
 export default function AdminLayout() {
@@ -13,14 +14,21 @@ export default function AdminLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const menuItems = [
-        { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
-        { path: '/admin/products', icon: Package, label: 'Produk' },
-        { path: '/admin/orders', icon: ShoppingCart, label: 'Pesanan' },
-        { path: '/admin/categories', icon: Folder, label: 'Kategori' },
-        { path: '/admin/banners', icon: Image, label: 'Banner' },
-        { path: '/admin/bulk-price', icon: DollarSign, label: 'Ubah Harga' },
-        { path: '/admin/subadmin-performance', icon: Users, label: 'Kinerja Subadmin' },
+        { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true, roles: ['admin'] },
+        { path: '/admin/products', icon: Package, label: 'Produk', roles: ['admin', 'subadmin'] },
+        { path: '/admin/orders', icon: ShoppingCart, label: 'Pesanan', roles: ['admin'] },
+        { path: '/admin/categories', icon: Folder, label: 'Kategori', roles: ['admin', 'subadmin'] },
+        { path: '/admin/banners', icon: Image, label: 'Banner', roles: ['admin', 'subadmin'] },
+        { path: '/admin/bulk-price', icon: DollarSign, label: 'Ubah Harga', roles: ['admin'] },
+        { path: '/admin/subadmin-performance', icon: Users, label: 'Kinerja Subadmin', roles: ['admin'] },
     ];
+
+    // Redirect subadmin trying to access main dashboard
+    useEffect(() => {
+        if (user?.role === 'subadmin' && location.pathname === '/admin') {
+            navigate('/admin/products');
+        }
+    }, [user, location.pathname, navigate]);
 
     const isActive = (path, exact = false) => {
         if (exact) return location.pathname === path;
@@ -132,7 +140,7 @@ export default function AdminLayout() {
                         Menu
                     </p>
                     <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                        {menuItems.map((item) => (
+                        {menuItems.filter(item => item.roles.includes(user?.role)).map((item) => (
                             <li key={item.path}>
                                 <Link
                                     to={item.path}
