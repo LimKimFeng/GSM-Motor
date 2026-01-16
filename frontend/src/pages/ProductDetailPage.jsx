@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 
 export default function ProductDetailPage() {
     const { slug } = useParams();
+    const navigate = useNavigate();
     const { isAuthenticated } = useAuthStore();
     const { addToCart } = useCartStore();
 
@@ -17,6 +18,7 @@ export default function ProductDetailPage() {
     const [quantity, setQuantity] = useState(1);
     const [currentImage, setCurrentImage] = useState(0);
     const [adding, setAdding] = useState(false);
+    const [buyingNow, setBuyingNow] = useState(false);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -71,6 +73,24 @@ export default function ProductDetailPage() {
             toast.error(error.response?.data?.error || 'Gagal menambahkan ke keranjang');
         } finally {
             setAdding(false);
+        }
+    };
+
+    const handleBuyNow = async () => {
+        if (!isAuthenticated) {
+            toast.error('Silakan login terlebih dahulu');
+            navigate('/login');
+            return;
+        }
+
+        setBuyingNow(true);
+        try {
+            await addToCart(product.id, quantity);
+            navigate('/keranjang');
+            toast.success('Silakan lanjutkan checkout');
+        } catch (error) {
+            toast.error(error.response?.data?.error || 'Gagal memproses pesanan');
+            setBuyingNow(false);
         }
     };
 
@@ -250,30 +270,57 @@ export default function ProductDetailPage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex gap-3">
+                    <div className="flex flex-col gap-3">
+                        <div className="flex gap-3">
+                            <button
+                                onClick={handleAddToCart}
+                                disabled={product.stock === 0 || adding}
+                                className="btn-primary flex-1 flex items-center justify-center gap-2 border-2 border-orange-600 hover:border-orange-700 transition-all"
+                                style={{ padding: '0.875rem' }}
+                            >
+                                {adding ? (
+                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                    <>
+                                        <ShoppingCart className="w-5 h-5" />
+                                        Tambah ke Keranjang
+                                    </>
+                                )}
+                            </button>
+
+                            <a
+                                href={whatsappUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn-secondary flex items-center justify-center gap-2 px-4"
+                            >
+                                <MessageCircle className="w-5 h-5" />
+                                <span className="hidden sm:inline">Tanya</span>
+                            </a>
+                        </div>
+
                         <button
-                            onClick={handleAddToCart}
-                            disabled={product.stock === 0 || adding}
-                            className="btn-primary flex-1 flex items-center justify-center gap-2"
+                            onClick={handleBuyNow}
+                            disabled={product.stock === 0 || buyingNow}
+                            className="btn w-full flex items-center justify-center gap-2 border-2 transition-all"
+                            style={{
+                                padding: '0.875rem',
+                                background: product.stock === 0 || buyingNow ? '#94a3b8' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                color: 'white',
+                                borderColor: product.stock === 0 || buyingNow ? '#94a3b8' : '#059669',
+                                fontWeight: '600',
+                                cursor: product.stock === 0 || buyingNow ? 'not-allowed' : 'pointer'
+                            }}
                         >
-                            {adding ? (
+                            {buyingNow ? (
                                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                             ) : (
                                 <>
-                                    <ShoppingCart className="w-5 h-5" />
-                                    Tambah ke Keranjang
+                                    <Zap className="w-5 h-5" />
+                                    Beli Sekarang
                                 </>
                             )}
                         </button>
-                        <a
-                            href={whatsappUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="btn-secondary flex items-center justify-center gap-2 px-4"
-                        >
-                            <MessageCircle className="w-5 h-5" />
-                            <span className="hidden sm:inline">Tanya</span>
-                        </a>
                     </div>
 
                     {/* Description */}

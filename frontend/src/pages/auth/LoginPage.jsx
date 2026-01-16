@@ -204,28 +204,16 @@ export default function LoginPage() {
                                 <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-neutral-700)' }}>
                                     Email
                                 </label>
-                                <div className="relative">
+                                <div className="flex items-center gap-3 border border-gray-200 rounded-lg px-4 py-3 focus-within:border-orange-500 focus-within:ring-2 focus-within:ring-orange-100 transition">
+                                    <Mail className="w-5 h-5 text-gray-400 shrink-0" />
                                     <input
                                         type="email"
                                         value={form.email}
                                         onChange={(e) => setForm({ ...form, email: e.target.value })}
-                                        className="input-field input-with-icon"
+                                        className="flex-1 outline-none bg-transparent"
                                         placeholder="email@example.com"
                                         required
                                         autoComplete="email"
-                                    />
-                                    <Mail
-                                        className="input-icon"
-                                        style={{
-                                            position: 'absolute',
-                                            left: '1rem',
-                                            top: '50%',
-                                            transform: 'translateY(-50%)',
-                                            width: '20px',
-                                            height: '20px',
-                                            color: 'var(--color-neutral-400)',
-                                            pointerEvents: 'none'
-                                        }}
                                     />
                                 </div>
                             </div>
@@ -235,49 +223,23 @@ export default function LoginPage() {
                                 <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-neutral-700)' }}>
                                     Password
                                 </label>
-                                <div className="relative">
+                                <div className="flex items-center gap-3 border border-gray-200 rounded-lg px-4 py-3 focus-within:border-orange-500 focus-within:ring-2 focus-within:ring-orange-100 transition">
+                                    <Lock className="w-5 h-5 text-gray-400 shrink-0" />
                                     <input
                                         type={showPassword ? 'text' : 'password'}
                                         value={form.password}
                                         onChange={(e) => setForm({ ...form, password: e.target.value })}
-                                        className="input-field input-with-icon"
-                                        style={{ paddingRight: '3rem' }}
+                                        className="flex-1 outline-none bg-transparent"
                                         placeholder="••••••••"
                                         required
                                         autoComplete="current-password"
                                     />
-                                    <Lock
-                                        className="input-icon"
-                                        style={{
-                                            position: 'absolute',
-                                            left: '1rem',
-                                            top: '50%',
-                                            transform: 'translateY(-50%)',
-                                            width: '20px',
-                                            height: '20px',
-                                            color: 'var(--color-neutral-400)',
-                                            pointerEvents: 'none'
-                                        }}
-                                    />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="transition"
-                                        style={{
-                                            position: 'absolute',
-                                            right: '1rem',
-                                            top: '50%',
-                                            transform: 'translateY(-50%)',
-                                            color: 'var(--color-neutral-400)',
-                                            background: 'none',
-                                            border: 'none'
-                                        }}
+                                        className="text-gray-400 hover:text-gray-600 transition shrink-0"
                                     >
-                                        {showPassword ? (
-                                            <EyeOff style={{ width: '20px', height: '20px' }} />
-                                        ) : (
-                                            <Eye style={{ width: '20px', height: '20px' }} />
-                                        )}
+                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                     </button>
                                 </div>
                             </div>

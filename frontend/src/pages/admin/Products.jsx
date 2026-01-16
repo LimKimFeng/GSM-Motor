@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Search, Edit, Trash2, X, UserCheck, ArrowLeft, DollarSign } from 'lucide-react';
 import { adminAPI } from '../../services/api';
 import toast from 'react-hot-toast';
+import MediaUploader from '../../components/MediaUploader';
 
 export default function Products() {
     const [products, setProducts] = useState([]);
@@ -221,41 +223,11 @@ export default function Products() {
                             <label className="block text-sm font-semibold mb-3" style={{ color: 'var(--color-primary)' }}>
                                 📸 Gambar Produk
                             </label>
-                            <input
-                                type="file"
-                                multiple
-                                accept="image/*"
-                                onChange={(e) => setImages([...e.target.files])}
-                                className="input-field"
-                                id="image-upload"
+                            <MediaUploader
+                                images={images}
+                                onChange={setImages}
+                                maxImages={5}
                             />
-                            <p className="text-xs text-gray-600 mt-2">
-                                Upload hingga 5 gambar. Format: JPG, PNG, GIF, WebP. Otomatis dikonversi ke WebP &lt;500KB
-                            </p>
-
-                            {/* Image Preview */}
-                            {images.length > 0 && (
-                                <div className="mt-4 grid grid-cols-3 gap-3">
-                                    {Array.from(images).map((img, idx) => (
-                                        <div key={idx} className="relative group">
-                                            <img
-                                                src={URL.createObjectURL(img)}
-                                                alt={`Preview ${idx + 1}`}
-                                                className="w-full h-24 object-cover rounded-lg border-2 border-orange-200"
-                                            />
-                                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center rounded-lg">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setImages(Array.from(images).filter((_, i) => i !== idx))}
-                                                    className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600"
-                                                >
-                                                    <X className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
                         </div>
 
                         {/* Product Details - 2 Columns */}
