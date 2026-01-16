@@ -46,7 +46,7 @@ export default function BulkPrice() {
                     </div>
                     <p className="text-sm text-yellow-600">
                         Fitur ini akan mengubah SEMUA harga produk sekaligus. Pastikan persentase yang dimasukkan benar.
-                        Harga akan dibulatkan ke atas ke kelipatan 100.
+                        Harga akan dibulatkan ke atas ke kelipatan 500.
                     </p>
                 </div>
 
@@ -78,8 +78,11 @@ export default function BulkPrice() {
                             <div className={`p-4 rounded-lg ${parseFloat(percentage) >= 0 ? 'bg-green-50' : 'bg-red-50'}`}>
                                 <p className={parseFloat(percentage) >= 0 ? 'text-green-700' : 'text-red-700'}>
                                     Contoh: Rp 100.000 → Rp {new Intl.NumberFormat('id-ID').format(
-                                        Math.ceil(100000 * (1 + parseFloat(percentage) / 100) / 100) * 100
+                                        Math.ceil(100000 * (1 + parseFloat(percentage) / 100) / 500) * 500
                                     )}
+                                </p>
+                                <p className="text-xs mt-1 text-gray-500">
+                                    *Harga akan dibulatkan ke kelipatan 500 terdekat
                                 </p>
                             </div>
                         )}

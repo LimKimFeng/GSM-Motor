@@ -300,26 +300,49 @@ func BulkPriceUpdate(c *gin.Context) {
 		go func(batch []models.Product) {
 			defer wg.Done()
 			for _, p := range batch {
-				// Calculate new price with rounding to nearest 100 (ceil)
-				newPrice := p.Price * (1 + req.Percentage/100)
-				newPrice = math.Ceil(newPrice/100) * 100
+				// Helper function to beautify price
+				beautifyPrice := func(price float64) float64 {
+					// Round to nearest 500
+					return math.Ceil(price/500) * 500
+				}
 
-				database.DB.Model(&p).Updates(map[string]interface{}{
+				// Calculate new base price
+				newPrice := p.Price * (1 + req.Percentage/100)
+				newPrice = beautifyPrice(newPrice)
+
+				updates := map[string]interface{}{
 					"price":             newPrice,
 					"last_price_update": now,
-				})
+				}
 
-				// Also update tiered prices if they exist
+				// Update tiered prices if they exist, maintaining the original discount ratio or applying new ratio
+				// Logic: Apply the same percentage change, then beautify
 				if p.Price3Items != nil && *p.Price3Items > 0 {
 					newPrice3 := *p.Price3Items * (1 + req.Percentage/100)
-					newPrice3 = math.Ceil(newPrice3/100) * 100
-					database.DB.Model(&p).Update("price_3_items", newPrice3)
+					beauty3 := beautifyPrice(newPrice3)
+					// Ensure tier price is not higher than unit price
+					if beauty3 >= newPrice {
+						beauty3 = newPrice - 500 // Min discount
+					}
+					updates["price_3_items"] = beauty3
 				}
+
 				if p.Price5Items != nil && *p.Price5Items > 0 {
 					newPrice5 := *p.Price5Items * (1 + req.Percentage/100)
-					newPrice5 = math.Ceil(newPrice5/100) * 100
-					database.DB.Model(&p).Update("price_5_items", newPrice5)
+					beauty5 := beautifyPrice(newPrice5)
+					// Ensure tier price 5 is lower than tier price 3
+					price3Val := updates["price_3_items"]
+					if price3Val != nil {
+						if beauty5 >= price3Val.(float64) {
+							beauty5 = price3Val.(float64) - 500
+						}
+					} else if beauty5 >= newPrice {
+						beauty5 = newPrice - 1000
+					}
+					updates["price_5_items"] = beauty5
 				}
+
+				database.DB.Model(&p).Updates(updates)
 			}
 		}(products[i:end])
 	}
