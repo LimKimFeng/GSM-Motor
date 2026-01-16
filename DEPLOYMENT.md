@@ -1,5 +1,35 @@
 # 🚀 GSM Motor - Deployment Guide
 
+## Quick Start (VPS Deployment)
+
+**First time setup:**
+```bash
+# 1. SSH to your VPS
+ssh user@your-vps-ip
+
+# 2. Clone/upload project to VPS
+# (upload to ~/GSM-Motor or any directory)
+
+# 3. Run setup script (creates directories, services, nginx config)
+cd ~/GSM-Motor
+sudo ./setup-vps.sh
+
+# 4. Configure environment
+nano backend/.env
+# (Set DB credentials, JWT secret, SMTP, etc.)
+
+# 5. Build and deploy
+./run.sh
+```
+
+**After initial setup, to update/redeploy:**
+```bash
+# Just run:
+./run.sh
+```
+
+---
+
 ## Prerequisites
 - Server dengan Ubuntu/Debian
 - Nginx
