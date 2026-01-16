@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Plus, Search, Edit, Trash2, X, UserCheck, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Plus, Search, Edit, Trash2, X, UserCheck, ArrowLeft, DollarSign } from 'lucide-react';
 import { adminAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 
@@ -103,9 +103,14 @@ export default function Products() {
                 <>
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="text-2xl font-bold text-gray-800">Produk</h1>
-                        <button onClick={() => openModal()} className="btn-primary flex items-center gap-2">
-                            <Plus className="w-4 h-4" /> Tambah Produk
-                        </button>
+                        <div className="flex gap-2">
+                            <Link to="/admin/bulk-price" className="btn-secondary flex items-center gap-2">
+                                <DollarSign className="w-4 h-4" /> Ubah Harga Masal
+                            </Link>
+                            <button onClick={() => openModal()} className="btn-primary flex items-center gap-2">
+                                <Plus className="w-4 h-4" /> Tambah Produk
+                            </button>
+                        </div>
                     </div>
 
                     {/* Search */}
