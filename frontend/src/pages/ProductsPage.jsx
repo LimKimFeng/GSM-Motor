@@ -67,7 +67,7 @@ export default function ProductsPage() {
             <div
                 className="sticky bg-white border-b"
                 style={{
-                    top: '105px',
+                    top: '0',
                     zIndex: 40,
                     borderColor: 'var(--color-neutral-100)'
                 }}
