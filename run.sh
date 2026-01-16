@@ -101,6 +101,12 @@ echo ""
 if [ "$IS_PRODUCTION" = true ]; then
     echo -e "${YELLOW}[3/5] 📦 Deploying files...${NC}"
     
+    # Stop backend service first to avoid "Text file busy" error
+    if systemctl is-active --quiet gsm-motor; then
+        echo "  → Stopping backend service..."
+        sudo systemctl stop gsm-motor
+    fi
+    
     # Ensure directories exist
     echo "  → Ensuring directories exist..."
     sudo mkdir -p /opt/gsm-motor/backend
