@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { ShoppingCart, Minus, Plus, MessageCircle, ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { ShoppingCart, Minus, Plus, MessageCircle, ChevronLeft, ChevronRight, Check, Zap } from 'lucide-react';
 import { productsAPI } from '../services/api';
 import { useAuthStore, useCartStore } from '../context/store';
 import ProductCard from '../components/ProductCard';
@@ -45,9 +45,21 @@ export default function ProductDetailPage() {
             : [];
 
     const getImageUrl = (path) => {
-        return path
-            ? `${import.meta.env.VITE_API_URL?.replace('/api', '')}/uploads/${path}`
-            : '/placeholder.webp';
+        if (!path) return '/placeholder.webp';
+
+        // Handle if path already contains full URL
+        if (path.startsWith('http://') || path.startsWith('https://')) {
+            return path;
+        }
+
+        // Remove leading slash if present to avoid double slashes
+        const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+
+        // Construct the full URL
+        const apiUrl = import.meta.env.VITE_API_URL || '';
+        const baseUrl = apiUrl.replace('/api', '');
+
+        return `${baseUrl}/uploads/${cleanPath}`;
     };
 
     const formatPrice = (price) => new Intl.NumberFormat('id-ID').format(price);
@@ -143,40 +155,126 @@ export default function ProductDetailPage() {
             <div className="grid md:grid-cols-2 gap-8">
                 {/* Images */}
                 <div>
-                    <div className="relative aspect-square bg-white rounded-xl overflow-hidden mb-4">
+                    <div
+                        className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl overflow-hidden mb-4 group"
+                        style={{
+                            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
+                            transition: 'all 0.3s ease'
+                        }}
+                    >
                         <img
                             src={getImageUrl(images[currentImage]?.image_path)}
                             alt={product.name}
                             className="w-full h-full object-cover"
+                            style={{
+                                transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                                transform: 'scale(1)'
+                            }}
+                            onError={(e) => {
+                                e.target.src = '/placeholder.webp';
+                            }}
+                            onMouseEnter={(e) => {
+                                e.target.style.transform = 'scale(1.05)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.target.style.transform = 'scale(1)';
+                            }}
                         />
+
+                        {/* Gradient Overlay */}
+                        <div
+                            className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100"
+                            style={{ transition: 'opacity 0.3s ease' }}
+                        />
+
                         {images.length > 1 && (
                             <>
                                 <button
                                     onClick={() => setCurrentImage((prev) => (prev - 1 + images.length) % images.length)}
-                                    className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-lg"
+                                    className="absolute left-3 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 hover:bg-white"
+                                    style={{
+                                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+                                        border: '2px solid rgba(255, 107, 53, 0.1)'
+                                    }}
                                 >
-                                    <ChevronLeft className="w-5 h-5" />
+                                    <ChevronLeft className="w-6 h-6" style={{ color: '#ff6b35' }} />
                                 </button>
                                 <button
                                     onClick={() => setCurrentImage((prev) => (prev + 1) % images.length)}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-lg"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 hover:bg-white"
+                                    style={{
+                                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+                                        border: '2px solid rgba(255, 107, 53, 0.1)'
+                                    }}
                                 >
-                                    <ChevronRight className="w-5 h-5" />
+                                    <ChevronRight className="w-6 h-6" style={{ color: '#ff6b35' }} />
                                 </button>
                             </>
+                        )}
+
+                        {/* Image Counter Badge */}
+                        {images.length > 1 && (
+                            <div
+                                className="absolute bottom-4 right-4 px-3 py-1.5 rounded-full text-sm font-medium backdrop-blur-md"
+                                style={{
+                                    background: 'rgba(0, 0, 0, 0.6)',
+                                    color: 'white',
+                                    border: '1px solid rgba(255, 255, 255, 0.2)'
+                                }}
+                            >
+                                {currentImage + 1} / {images.length}
+                            </div>
                         )}
                     </div>
 
                     {images.length > 1 && (
-                        <div className="flex gap-2 overflow-x-auto pb-2">
+                        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
                             {images.map((img, index) => (
                                 <button
                                     key={index}
                                     onClick={() => setCurrentImage(index)}
-                                    className={`w-16 h-16 rounded-lg overflow-hidden shrink-0 border-2 transition-colors ${currentImage === index ? 'border-gsm-orange' : 'border-transparent'
-                                        }`}
+                                    className="relative shrink-0 overflow-hidden rounded-xl transition-all duration-300"
+                                    style={{
+                                        width: '80px',
+                                        height: '80px',
+                                        border: currentImage === index
+                                            ? '3px solid #ff6b35'
+                                            : '3px solid transparent',
+                                        boxShadow: currentImage === index
+                                            ? '0 4px 15px rgba(255, 107, 53, 0.3)'
+                                            : '0 2px 8px rgba(0, 0, 0, 0.1)',
+                                        transform: currentImage === index ? 'scale(1.05)' : 'scale(1)',
+                                        opacity: currentImage === index ? 1 : 0.7
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (currentImage !== index) {
+                                            e.currentTarget.style.opacity = '1';
+                                            e.currentTarget.style.transform = 'scale(1.05)';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (currentImage !== index) {
+                                            e.currentTarget.style.opacity = '0.7';
+                                            e.currentTarget.style.transform = 'scale(1)';
+                                        }
+                                    }}
                                 >
-                                    <img src={getImageUrl(img.image_path)} alt="" className="w-full h-full object-cover" />
+                                    <img
+                                        src={getImageUrl(img.image_path)}
+                                        alt=""
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            e.target.src = '/placeholder.webp';
+                                        }}
+                                    />
+
+                                    {/* Active indicator overlay */}
+                                    {currentImage === index && (
+                                        <div
+                                            className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-transparent"
+                                            style={{ pointerEvents: 'none' }}
+                                        />
+                                    )}
                                 </button>
                             ))}
                         </div>
@@ -275,8 +373,31 @@ export default function ProductDetailPage() {
                             <button
                                 onClick={handleAddToCart}
                                 disabled={product.stock === 0 || adding}
-                                className="btn-primary flex-1 flex items-center justify-center gap-2 border-2 border-orange-600 hover:border-orange-700 transition-all"
-                                style={{ padding: '0.875rem' }}
+                                className="btn-primary flex-1 flex items-center justify-center gap-2 transition-all duration-300"
+                                style={{
+                                    padding: '0.875rem',
+                                    border: '2px solid #ff6b35',
+                                    background: product.stock === 0 || adding
+                                        ? '#cbd5e1'
+                                        : 'linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%)',
+                                    boxShadow: product.stock === 0 || adding
+                                        ? 'none'
+                                        : '0 4px 20px rgba(255, 107, 53, 0.4)',
+                                    transform: 'scale(1)',
+                                    cursor: product.stock === 0 || adding ? 'not-allowed' : 'pointer'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (product.stock > 0 && !adding) {
+                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                        e.currentTarget.style.boxShadow = '0 6px 25px rgba(255, 107, 53, 0.5)';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1)';
+                                    e.currentTarget.style.boxShadow = product.stock === 0 || adding
+                                        ? 'none'
+                                        : '0 4px 20px rgba(255, 107, 53, 0.4)';
+                                }}
                             >
                                 {adding ? (
                                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -292,7 +413,22 @@ export default function ProductDetailPage() {
                                 href={whatsappUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="btn-secondary flex items-center justify-center gap-2 px-4"
+                                className="btn-secondary flex items-center justify-center gap-2 px-4 transition-all duration-300"
+                                style={{
+                                    border: '2px solid #10b981',
+                                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                    color: 'white',
+                                    borderRadius: '12px',
+                                    boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1)';
+                                    e.currentTarget.style.boxShadow = '0 4px 15px rgba(16, 185, 129, 0.3)';
+                                }}
                             >
                                 <MessageCircle className="w-5 h-5" />
                                 <span className="hidden sm:inline">Tanya</span>
@@ -302,14 +438,33 @@ export default function ProductDetailPage() {
                         <button
                             onClick={handleBuyNow}
                             disabled={product.stock === 0 || buyingNow}
-                            className="btn w-full flex items-center justify-center gap-2 border-2 transition-all"
+                            className="btn w-full flex items-center justify-center gap-2 transition-all duration-300"
                             style={{
                                 padding: '0.875rem',
-                                background: product.stock === 0 || buyingNow ? '#94a3b8' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                background: product.stock === 0 || buyingNow
+                                    ? '#94a3b8'
+                                    : 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
                                 color: 'white',
-                                borderColor: product.stock === 0 || buyingNow ? '#94a3b8' : '#059669',
+                                border: '2px solid',
+                                borderColor: product.stock === 0 || buyingNow ? '#94a3b8' : '#7c3aed',
                                 fontWeight: '600',
-                                cursor: product.stock === 0 || buyingNow ? 'not-allowed' : 'pointer'
+                                cursor: product.stock === 0 || buyingNow ? 'not-allowed' : 'pointer',
+                                borderRadius: '12px',
+                                boxShadow: product.stock === 0 || buyingNow
+                                    ? 'none'
+                                    : '0 4px 20px rgba(139, 92, 246, 0.4)'
+                            }}
+                            onMouseEnter={(e) => {
+                                if (product.stock > 0 && !buyingNow) {
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                    e.currentTarget.style.boxShadow = '0 6px 25px rgba(139, 92, 246, 0.5)';
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'scale(1)';
+                                e.currentTarget.style.boxShadow = product.stock === 0 || buyingNow
+                                    ? 'none'
+                                    : '0 4px 20px rgba(139, 92, 246, 0.4)';
                             }}
                         >
                             {buyingNow ? (
