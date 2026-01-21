@@ -152,14 +152,27 @@ export default function ProductDetailPage() {
                 )}
             </nav>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
-                {/* Images */}
-                <div className="w-full">
+            <div style={{
+                display: 'flex',
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: '3rem',
+                width: '100%'
+            }}>
+                {/* Images - Left Column */}
+                <div style={{
+                    flex: '1 1 450px',
+                    minWidth: '300px',
+                    maxWidth: '600px'
+                }}>
                     <div
                         className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl overflow-hidden mb-4 group"
                         style={{
                             boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
-                            transition: 'all 0.3s ease'
+                            transition: 'all 0.3s ease',
+                            position: 'relative',
+                            width: '100%',
+                            paddingBottom: '100%'
                         }}
                     >
                         <img
@@ -168,7 +181,13 @@ export default function ProductDetailPage() {
                             className="w-full h-full object-contain"
                             style={{
                                 transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-                                transform: 'scale(1)'
+                                transform: 'scale(1)',
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'contain'
                             }}
                             onError={(e) => {
                                 e.target.src = '/placeholder.webp';
@@ -184,7 +203,15 @@ export default function ProductDetailPage() {
                         {/* Gradient Overlay */}
                         <div
                             className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100"
-                            style={{ transition: 'opacity 0.3s ease' }}
+                            style={{
+                                transition: 'opacity 0.3s ease',
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                pointerEvents: 'none'
+                            }}
                         />
 
                         {images.length > 1 && (
@@ -194,7 +221,12 @@ export default function ProductDetailPage() {
                                     className="absolute left-3 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 hover:bg-white"
                                     style={{
                                         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
-                                        border: '2px solid rgba(255, 107, 53, 0.1)'
+                                        border: '2px solid rgba(255, 107, 53, 0.1)',
+                                        position: 'absolute',
+                                        left: '12px',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        zIndex: 10
                                     }}
                                 >
                                     <ChevronLeft className="w-6 h-6" style={{ color: '#ff6b35' }} />
@@ -204,7 +236,12 @@ export default function ProductDetailPage() {
                                     className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 hover:bg-white"
                                     style={{
                                         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
-                                        border: '2px solid rgba(255, 107, 53, 0.1)'
+                                        border: '2px solid rgba(255, 107, 53, 0.1)',
+                                        position: 'absolute',
+                                        right: '12px',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        zIndex: 10
                                     }}
                                 >
                                     <ChevronRight className="w-6 h-6" style={{ color: '#ff6b35' }} />
@@ -220,6 +257,9 @@ export default function ProductDetailPage() {
                                     background: 'rgba(0, 0, 0, 0.6)',
                                     color: 'white',
                                     border: '1px solid rgba(255, 255, 255, 0.2)',
+                                    position: 'absolute',
+                                    bottom: '16px',
+                                    right: '16px',
                                     zIndex: 10
                                 }}
                             >
@@ -229,7 +269,12 @@ export default function ProductDetailPage() {
                     </div>
 
                     {images.length > 1 && (
-                        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide" style={{
+                            display: 'flex',
+                            gap: '12px',
+                            overflowX: 'auto',
+                            paddingBottom: '8px'
+                        }}>
                             {images.map((img, index) => (
                                 <button
                                     key={index}
@@ -245,7 +290,12 @@ export default function ProductDetailPage() {
                                             ? '0 4px 15px rgba(255, 107, 53, 0.3)'
                                             : '0 2px 8px rgba(0, 0, 0, 0.1)',
                                         transform: currentImage === index ? 'scale(1.05)' : 'scale(1)',
-                                        opacity: currentImage === index ? 1 : 0.7
+                                        opacity: currentImage === index ? 1 : 0.7,
+                                        flexShrink: 0,
+                                        overflow: 'hidden',
+                                        borderRadius: '12px',
+                                        transition: 'all 0.3s',
+                                        position: 'relative'
                                     }}
                                     onMouseEnter={(e) => {
                                         if (currentImage !== index) {
@@ -264,6 +314,11 @@ export default function ProductDetailPage() {
                                         src={getImageUrl(img.image_path)}
                                         alt=""
                                         className="w-full h-full object-cover"
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'cover'
+                                        }}
                                         onError={(e) => {
                                             e.target.src = '/placeholder.webp';
                                         }}
@@ -273,7 +328,14 @@ export default function ProductDetailPage() {
                                     {currentImage === index && (
                                         <div
                                             className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-transparent"
-                                            style={{ pointerEvents: 'none' }}
+                                            style={{
+                                                pointerEvents: 'none',
+                                                position: 'absolute',
+                                                top: 0,
+                                                left: 0,
+                                                right: 0,
+                                                bottom: 0
+                                            }}
                                         />
                                     )}
                                 </button>
@@ -282,8 +344,11 @@ export default function ProductDetailPage() {
                     )}
                 </div>
 
-                {/* Details */}
-                <div className="w-full">
+                {/* Details - Right Column */}
+                <div style={{
+                    flex: '1 1 450px',
+                    minWidth: '300px'
+                }}>
                     <span className="text-sm text-gray-500 uppercase tracking-wide">
                         {product.category?.name}
                     </span>
