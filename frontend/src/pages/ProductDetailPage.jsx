@@ -547,18 +547,30 @@ export default function ProductDetailPage() {
                         </button>
                     </div>
 
-                    {/* Description */}
-                    {product.description && (
-                        <div className="mt-8">
-                            <h3 className="font-semibold text-gray-800 mb-2">Deskripsi</h3>
-                            <p className="text-gray-600 whitespace-pre-line">{product.description}</p>
-                        </div>
-                    )}
+
                 </div>
             </div>
 
             {/* Clearfix */}
             <div style={{ clear: 'both' }}></div>
+
+            {/* PRODUCT DESCRIPTION - FULL WIDTH */}
+            <div className="mt-12 mb-12" style={{
+                width: '100%',
+                maxWidth: '1200px',
+                margin: '3rem auto',
+                padding: '2rem',
+                background: '#fff',
+                borderRadius: '8px',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+            }}>
+                <h3 className="text-xl font-bold text-gray-800 mb-4 pb-4 border-b border-gray-100">Deskripsi Produk</h3>
+                {product.description && (
+                    <div className="prose max-w-none text-gray-600 leading-relaxed whitespace-pre-line">
+                        {product.description}
+                    </div>
+                )}
+            </div>
 
             {/* Related Products */}
             {related.length > 0 && (
