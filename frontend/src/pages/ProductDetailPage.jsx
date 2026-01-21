@@ -152,18 +152,20 @@ export default function ProductDetailPage() {
                 )}
             </nav>
 
+            {/* PRODUCT DETAIL LAYOUT - SHOPEE STYLE */}
             <div style={{
-                display: 'flex',
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                gap: '3rem',
-                width: '100%'
+                width: '100%',
+                maxWidth: '1200px',
+                margin: '0 auto',
+                display: 'block',
+                overflow: 'hidden'
             }}>
-                {/* Images - Left Column */}
+                {/* LEFT COLUMN - Image Gallery (45%) */}
                 <div style={{
-                    flex: '1 1 450px',
-                    minWidth: '300px',
-                    maxWidth: '600px'
+                    width: '45%',
+                    float: 'left',
+                    paddingRight: '30px',
+                    boxSizing: 'border-box'
                 }}>
                     <div
                         className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl overflow-hidden mb-4 group"
@@ -344,10 +346,11 @@ export default function ProductDetailPage() {
                     )}
                 </div>
 
-                {/* Details - Right Column */}
+                {/* RIGHT COLUMN - Product Details (55%) */}
                 <div style={{
-                    flex: '1 1 450px',
-                    minWidth: '300px'
+                    width: '55%',
+                    float: 'left',
+                    boxSizing: 'border-box'
                 }}>
                     <span className="text-sm text-gray-500 uppercase tracking-wide">
                         {product.category?.name}
@@ -553,6 +556,9 @@ export default function ProductDetailPage() {
                     )}
                 </div>
             </div>
+
+            {/* Clearfix */}
+            <div style={{ clear: 'both' }}></div>
 
             {/* Related Products */}
             {related.length > 0 && (
