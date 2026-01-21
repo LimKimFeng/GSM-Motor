@@ -152,9 +152,9 @@ export default function ProductDetailPage() {
                 )}
             </nav>
 
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
                 {/* Images */}
-                <div>
+                <div className="w-full">
                     <div
                         className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl overflow-hidden mb-4 group"
                         style={{
@@ -165,7 +165,7 @@ export default function ProductDetailPage() {
                         <img
                             src={getImageUrl(images[currentImage]?.image_path)}
                             alt={product.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                             style={{
                                 transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
                                 transform: 'scale(1)'
@@ -219,7 +219,8 @@ export default function ProductDetailPage() {
                                 style={{
                                     background: 'rgba(0, 0, 0, 0.6)',
                                     color: 'white',
-                                    border: '1px solid rgba(255, 255, 255, 0.2)'
+                                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                                    zIndex: 10
                                 }}
                             >
                                 {currentImage + 1} / {images.length}
@@ -282,7 +283,7 @@ export default function ProductDetailPage() {
                 </div>
 
                 {/* Details */}
-                <div>
+                <div className="w-full">
                     <span className="text-sm text-gray-500 uppercase tracking-wide">
                         {product.category?.name}
                     </span>
