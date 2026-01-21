@@ -19,6 +19,16 @@ export default function ProductDetailPage() {
     const [currentImage, setCurrentImage] = useState(0);
     const [adding, setAdding] = useState(false);
     const [buyingNow, setBuyingNow] = useState(false);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const isMobile = windowWidth < 1024; // Use 1024 as breakpoint for stacking complex Shopee layout
+
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -160,11 +170,12 @@ export default function ProductDetailPage() {
                 display: 'block',
                 overflow: 'hidden'
             }}>
-                {/* LEFT COLUMN - Image Gallery (45%) */}
+                {/* LEFT COLUMN - Image Gallery */}
                 <div style={{
-                    width: '45%',
-                    float: 'left',
-                    paddingRight: '30px',
+                    width: isMobile ? '100%' : '45%',
+                    float: isMobile ? 'none' : 'left',
+                    paddingRight: isMobile ? '0' : '30px',
+                    marginBottom: isMobile ? '2rem' : '0',
                     boxSizing: 'border-box'
                 }}>
                     <div
@@ -346,10 +357,10 @@ export default function ProductDetailPage() {
                     )}
                 </div>
 
-                {/* RIGHT COLUMN - Product Details (55%) */}
+                {/* RIGHT COLUMN - Product Details */}
                 <div style={{
-                    width: '55%',
-                    float: 'left',
+                    width: isMobile ? '100%' : '55%',
+                    float: isMobile ? 'none' : 'left',
                     boxSizing: 'border-box'
                 }}>
                     <span className="text-sm text-gray-500 uppercase tracking-wide">
@@ -555,18 +566,19 @@ export default function ProductDetailPage() {
             <div style={{ clear: 'both' }}></div>
 
             {/* PRODUCT DESCRIPTION - FULL WIDTH */}
-            <div className="mt-12 mb-12" style={{
+            <div style={{
                 width: '100%',
                 maxWidth: '1200px',
-                margin: '3rem auto',
-                padding: '2rem',
+                margin: isMobile ? '1rem auto' : '3rem auto',
+                padding: isMobile ? '1rem' : '2rem',
                 background: '#fff',
                 borderRadius: '8px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                boxSizing: 'border-box'
             }}>
                 <h3 className="text-xl font-bold text-gray-800 mb-4 pb-4 border-b border-gray-100">Deskripsi Produk</h3>
                 {product.description && (
-                    <div className="prose max-w-none text-gray-600 leading-relaxed whitespace-pre-line">
+                    <div className="prose max-w-none text-gray-600 leading-relaxed whitespace-pre-line" style={{ fontSize: isMobile ? '0.925rem' : '1rem' }}>
                         {product.description}
                     </div>
                 )}
